@@ -1,0 +1,20 @@
+<root>
+	<styles>
+    <include src="file://{resources}/styles/custom_game/iqueue_hud.css" />
+	</styles>
+	<scripts>
+		<include src="file://{resources}/scripts/iqueue/iqueue_panels.js" /> 
+	</scripts>
+	<Panel class="QueuePanel">
+		<Button id="QueueButton">
+			<DOTAAbilityImage hittest="false" id="AbilityImage" />	
+			<Panel hittest="false" id="Cooldown">
+				<Panel hittest="false" id="CooldownOverlay" />
+				<Label hittest="false" id="CooldownTimer"	/>
+			</Panel>
+		</Button>
+		<Panel hittest="false"	id="SlotNumber">
+			<Label hittest="false"	id="SlotNumberText" />
+		</Panel>
+	</Panel>
+</root>

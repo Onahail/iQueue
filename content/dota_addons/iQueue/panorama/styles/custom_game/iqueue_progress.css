@@ -1,0 +1,43 @@
+.ProgressRoot
+{
+    width: 100%;
+    height: 100%;
+    visibility: visible;
+}
+ 
+.ProgressPanel
+{
+    border: 2px black;
+    border-radius: 2px;
+    box-shadow: #00000066 -3px -3px 6px 6px;
+    background-color: #000000ff;
+}
+ 
+.ProgressLeft
+{
+    height:100%;
+    width:10%;
+    background-color: #00FF00;
+}
+ 
+.ProgressRight
+{
+    height:100%;
+    width:90%;
+}
+ 
+#Progress
+{
+    width:500px;
+    height:20px;
+    align:center top;
+		margin-top: 100px;
+		
+}
+
+._hidden
+{
+	visibility: collapse;
+}
+
+ 

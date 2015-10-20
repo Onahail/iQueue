@@ -1,0 +1,21 @@
+<root>
+  <styles>
+    <include src="file://{resources}/styles/custom_game/iqueue_hud.css" />
+  </styles>
+  <scripts>
+    
+		<include src="file://{resources}/scripts/iqueue/iqueue_hud.js" />
+		<include src="file://{resources}/scripts/iqueue/iqueue.js" />
+
+  </scripts>
+  <Panel class="QueueRoot" hittest="false">
+    <Panel id="queue_row" />
+  </Panel>
+</root>
+
+<!--
+
+<include src="file://{resources}/scripts/iqueue/iqueue_building_selection.js" /> 
+
+
+-->

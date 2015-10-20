@@ -1,5 +1,5 @@
 var percent = 0;
- 
+  
 function SetProgress(bar, perc)
 {
   var left = bar.GetChild(0);

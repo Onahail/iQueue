@@ -1,5 +1,5 @@
 "use scrict";
-
+ 
 //panel.DeleteAsync(0) 
 
 function OnBuildingSelection( event ) {

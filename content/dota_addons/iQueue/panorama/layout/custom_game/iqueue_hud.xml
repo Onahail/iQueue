@@ -6,7 +6,6 @@
     
 		<include src="file://{resources}/scripts/iqueue/iqueue_hud.js" />
 		<include src="file://{resources}/scripts/iqueue/iqueue.js" />
-
   </scripts>
   <Panel class="QueueRoot" hittest="false">
     <Panel id="queue_row" />

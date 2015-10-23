@@ -119,7 +119,8 @@ function IQueue:_InitIQueue()
 	
 	-- Register Listeners
 	CustomGameEventManager:RegisterListener( "execute_order", Dynamic_Wrap(IQueue, "ExecuteOrder"))	
-		
+	CustomGameEventManager:RegisterListener( "remove_from_queue", Dynamic_Wrap(IQueue, "RemoveFromQueue"))
+	CustomGameEventManager:RegisterListener( "destroy_queue_timer", Dynamic_Wrap(IQueue, "DestroyQueueTimer"))	
 		
 		
 		

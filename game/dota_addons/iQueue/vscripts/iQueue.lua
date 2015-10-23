@@ -31,9 +31,9 @@ function InitalizeBuildingQueue( building )
 	local unitLabel = building:GetUnitLabel()
 	
 	if unitLabel == "CanQueue" then
-		print("Queue created for: ", buildingName)
+		--print("Queue created for: ", buildingName)
 		building['Queue'] = {}
-		building['Queue']['UnitTable'] = {}
+		--building['Queue']['UnitTable'] = {}
 	end
 end
 
@@ -98,56 +98,65 @@ function AddToQueue( building, ability, abilityName, queueTime, queueType, whatT
 	
 	building.state = building.state or "Not Building"
 	
-	local queueTable = {whatToQueue = whatToQueue, queueTime = queueTime, abilityName = abilityName}
+	local queueTable = {whatToQueue = whatToQueue, queueTime = queueTime, abilityName = abilityName, queueType = queueType}
 	
 	if building['Queue'] == nil then
 		InitalizeBuildingQueue( building )
 		print("Building Queue never initialized. Creating it now. This should never happen")
 	end
 	
-	
-	print (whatToQueue, "added to queue, it will be finished in ", queueTime, " seconds.")
-	
 	if #building['Queue'] < MAX_BUILDING_QUEUE then
 		table.insert(building['Queue'], queueTable)
-		CustomGameEventManager:Send_ServerToPlayer( player, "add_to_queue", { queueTime = queueTime, abilityName = abilityName })
+		CustomGameEventManager:Send_ServerToPlayer( player, "add_to_queue", { queueTime = queueTime, abilityName = abilityName, entindex = building:entindex() })
 		if building.state == "Not Building" then
 			
 			print ("Starting queue")
-			function building.StartQueue()
-
-				print("StartQueue called")
-			
-				building.state = "Building"
-
-				building.timer = Timers:CreateTimer(building['Queue'][1].queueTime, function()
-						
-						if queueType == "Unit" then
-							SpawnUnit(building, player, playerID, team)
-						elseif queueType == "Research" then
-							UnlockResearch()
-						elseif queueType =="Upgrade" then
-							ApplyUpgrade()
-						else	
-							print("QueueType not specified... Breaking")
-							return;
-						end
-						
-						local queueItem = table.remove(building['Queue'], 1)
-						CustomGameEventManager:Send_ServerToPlayer( player, "remove_from_queue", { entindex = building:entindex() })
-						if building['Queue'][1] ~= nil then
-								building.StartQueue()
-						else
-							building.state = "Not Building"
-							return;
-						end
-					end)
-				end
-				building.StartQueue()
+			StartQueue(building, queueTime, queueType)
+		
 		end
 	else
 		print("MAX QUEUE LIMIT REACHED!")
 	end
+end
+
+function StartQueue(building, queueTime, queueType )
+
+	local player = building:GetOwner()
+	local playerID = building:GetOwner():GetPlayerID()
+	local team = player:GetTeam()
+	
+	local currentGameTime = GameRules:GetGameTime();
+	--print(currentGameTime)
+
+	print("StartQueue called")
+	print(queueType ,building['Queue'][1].whatToQueue, "has started, it will be finished in ", queueTime, " seconds.")
+	
+	building.state = "Building"
+	
+	CustomGameEventManager:Send_ServerToPlayer( player, "show_timer", { queueTime = queueTime, currentGameTime = currentGameTime, index = building:entindex() })
+
+	building.timer = Timers:CreateTimer(building['Queue'][1].queueTime, function()
+			
+		if queueType == "Unit" then
+			SpawnUnit(building, player, playerID, team)
+		elseif queueType == "Research" then
+			UnlockResearch()
+		elseif queueType =="Upgrade" then
+			ApplyUpgrade()
+		else	
+			print("QueueType not specified... Breaking")
+			return;
+		end
+		
+		local x = table.remove(building['Queue'], 1)
+		CustomGameEventManager:Send_ServerToPlayer( player, "remove_from_queue", { entindex = building:entindex() })
+		if #building['Queue'] > 0 then
+				StartQueue( building, queueTime, queueType )
+		else
+			building.state = "Not Building"
+			return;
+		end
+	end)
 end
 
 
@@ -168,6 +177,37 @@ function SpawnUnit(building, player, playerID, team)
 	
 end
 
+
+function IQueue:RemoveFromQueue( event )
+
+	local building = EntIndexToHScript(event.entindex)
+	local queuePosition = event.slotNumber
+	
+	local x = table.remove(building['Queue'], queuePosition)
+	
+	if queuePosition == 1 then
+		DestroyQueueTimer( building )
+	end
+end
+
+
+function DestroyQueueTimer( building )
+
+	local player = building:GetOwner()
+	
+	Timers:RemoveTimer( building.timer )
+  Timers.timers[ building.timer ] = nil
+	
+	if #building['Queue'] > 0 then
+			StartQueue( building, building['Queue'][1].queueTime, building['Queue'][1].queueType )
+			CustomGameEventManager:Send_ServerToPlayer( player, "update_timer", { entindex = building:entindex() })
+	else
+		building.state = "Not Building"
+		CustomGameEventManager:Send_ServerToPlayer( player, "change_timer_state", { entindex = building:entindex() })
+	return;
+	end
+	
+end
 	
 
 

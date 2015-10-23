@@ -5,10 +5,13 @@ var m_QueuePanels = []
 var BUILDING_QUEUE_MAX = 6;
 
 
+var timerState = timerState || "No Timer";
 
 function CreateQueuePanels()
 {
 	var queueParent = $("#queue_row");
+	queueParent.data().CancelQueueInSlot = CancelQueueInSlot;
+	queueParent.data().CheckQueue = CheckQueue;
 	
 	//queueParent.AddClass("_hidden");
 	
@@ -22,8 +25,15 @@ function CreateQueuePanels()
 	{
 		var parentPanel = queueParent;
 		var queuePanel = $.CreatePanel("Panel", parentPanel, "");
-		queuePanel.BLoadLayout( "file://{resources}/layout/custom_game/iqueue_panels.xml", false, false );
+		
+		if (i == 0){ 
+			queuePanel.BLoadLayout( "file://{resources}/layout/custom_game/iqueue_panel_1.xml", false, false );
+		}else{
+			queuePanel.BLoadLayout( "file://{resources}/layout/custom_game/iqueue_panels.xml", false, false );
+		}
 		queuePanel.data().SetQueueSlot( i );
+		queuePanel.data().SlotNumber = i + 1;
+		queuePanel.data().ParentPanel = parentPanel;
 		
 		m_QueuePanels.push(queuePanel);
 	}
@@ -34,23 +44,35 @@ function UpdateQueue()
 {
 	var queryBuilding = Players.GetLocalPlayerPortraitUnit();
 	var unitLabel = Entities.GetUnitLabel( queryBuilding );
+	var timerPanel = m_QueuePanels[0];
+	var queueParent = $("#queue_row");
 	
 	//$.Msg("UpdateQueue value of unitLabel: ", unitLabel);
 	
 	if (unitLabel == "CanQueue")
 	{
+		queueParent.SetHasClass( "_hidden", false);
 		for (i = 0; i < BUILDING_QUEUE_MAX; ++i)
 		{
 			var queuePanel = m_QueuePanels[i];
 			var slot = GetQueuedInSlot(queryBuilding, i);
 			//$.Msg("Value of slot in UpdateQueue: ", slot);
-			queuePanel.data().SetQueue( queryBuilding, slot);
+			queuePanel.data().SetQueue( queryBuilding, slot, i);
 			m_SlotNumber = i;
-			
-			
 		}
-	$.Schedule( 0.1, UpdateQueue );
+		timerPanel.data().SetTimerState(BuildingQueueTable[queryBuilding].timerState)
+		if (BuildingQueueTable[queryBuilding][0])
+		{
+			//$.Msg("Calling SetTimer");
+			timerPanel.data().SetTimer(BuildingQueueTable[queryBuilding][0].queueBuildTime, 
+							 BuildingQueueTable[queryBuilding][0].queueStart,
+							 BuildingQueueTable[queryBuilding][0].queueEndTime);
+		}
 	}
+	else{
+		queueParent.SetHasClass( "_hidden", true);
+	}
+	$.Schedule( 0.1, UpdateQueue );
 }
 
 
@@ -62,13 +84,37 @@ function GetQueuedInSlot( queryBuilding, i)
 		var slot = BuildingQueueTable[queryBuilding][i].abilityName;
 		return slot;
 	}
+}
+
+function CheckQueue( slotNumber )
+{
+	var queueTableIndex = slotNumber -1;
+	var mainSelected = Players.GetLocalPlayerPortraitUnit();
 	
-	
-	
-	//$.Msg("Value of slot in GetQueuedInSlot: ", slot);
-	
-	
-	
+	if (BuildingQueueTable[mainSelected][queueTableIndex]){
+		return true;
+	}
+}
+
+function CancelQueueInSlot( slotNumber )
+{
+	var mainSelected = Players.GetLocalPlayerPortraitUnit();
+	var queueTableIndex = slotNumber - 1;
+	//$.Msg("Slot number ", slotNumber, " has been double clicked");
+	if (BuildingQueueTable[mainSelected][queueTableIndex]){
+		$.Msg("Removing queue from index: ", queueTableIndex);
+		BuildingQueueTable[mainSelected].splice(queueTableIndex, 1);
+		
+		 // Sending slotNumber because Lua is stupid and its first position in a table is 1
+		GameEvents.SendCustomGameEventToServer( "remove_from_queue", { slotNumber : slotNumber, entindex : mainSelected });
+	}
+	UpdateQueue();
+}
+
+function ChangeTimerState( event )
+{
+	var index = event.entindex;
+	BuildingQueueTable[index].timerState = "No Timer";
 }
 
 
@@ -79,10 +125,10 @@ function GetQueuedInSlot( queryBuilding, i)
 		GameEvents.Subscribe( "remove_from_queue", UpdateQueue );
 		GameEvents.Subscribe( "dota_player_update_selected_unit", UpdateQueue );
 		GameEvents.Subscribe( "dota_player_update_query_unit", UpdateQueue );
+		GameEvents.Subscribe( "update_timer", UpdateQueue);
+		GameEvents.Subscribe( "change_timer_state", ChangeTimerState );
 	
 		CreateQueuePanels();
 		UpdateQueue();
-		
-		
-    
+
 })();

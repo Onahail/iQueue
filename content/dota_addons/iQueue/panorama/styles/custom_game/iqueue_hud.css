@@ -1,3 +1,22 @@
+#CancelPanel
+{
+	width: 100%;
+	height: 100%;
+	visibility: collapse;
+}
+
+#CancelImage
+{
+	width: 100%;
+	height: 100%;
+}
+
+.show_cancel #CancelPanel
+{
+	visibility: visible;
+}
+
+
 .QueueRoot
 {
 	vertical-align: bottom;

@@ -34,6 +34,7 @@ function OnBuildingSelection( event ) {
 		
 }
 
+
 function CanQueue( entityIndex ){
 	
 	//$.Msg("Function called properly")
@@ -52,6 +53,7 @@ function ShowQueue( panel ){
 
 (function () {
 	GameEvents.Subscribe( "dota_player_update_selected_unit", OnBuildingSelection );
+	GameEvents.Subscribe( "dota_player_update_selected_unit", ReturnSelectedEntity );
 })();
 
 

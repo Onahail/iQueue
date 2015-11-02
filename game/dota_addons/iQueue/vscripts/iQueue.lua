@@ -60,10 +60,10 @@ function Queue( event )
 	
 
 	CustomGameEventManager:Send_ServerToPlayer( player, "mass_queue", {ability = event.ability,
-																																		 AbilityName = abilityName,
-																																		 WhatToQueue = whatToQueue, 
-																																		 QueueTime = event.QueueTime,
-																																		 QueueType = event.QueueType} )
+									   AbilityName = abilityName,
+				 					   WhatToQueue = whatToQueue, 
+		 							   QueueTime = event.QueueTime,
+	 								   QueueType = event.QueueType} )
 	
 end
 

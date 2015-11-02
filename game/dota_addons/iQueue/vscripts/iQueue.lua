@@ -151,7 +151,7 @@ function StartQueue(building, queueTime, queueType )
 		local x = table.remove(building['Queue'], 1)
 		CustomGameEventManager:Send_ServerToPlayer( player, "remove_from_queue", { entindex = building:entindex() })
 		if #building['Queue'] > 0 then
-				StartQueue( building, queueTime, queueType )
+				StartQueue( building, building['Queue'][1].queueTime, building['Queue'][1].queueType )
 		else
 			building.state = "Not Building"
 			return;

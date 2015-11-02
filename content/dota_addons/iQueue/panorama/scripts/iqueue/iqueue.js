@@ -5,7 +5,8 @@
 var BuildingQueueTable = BuildingQueueTable || [];
 
 
-function InitializeQueueTable( event ){
+function InitializeQueueTable( event )
+{
 	
 	var index = event.entindex;
 	//$.Msg("Index of unit spawned: ", index);
@@ -34,7 +35,8 @@ function GetUnitLabel( index )
 		return unitLabel;
 }
 
-function AddToQueue( event ){
+function AddToQueue( event )
+{
 	
 	$.Msg("AddToQueue called");
 	
@@ -47,7 +49,8 @@ function AddToQueue( event ){
 	
 }
 
-function RemoveFromQueue( event ){
+function RemoveFromQueue( event )
+{
 	
 	var index = event.entindex;
 	
@@ -62,7 +65,8 @@ function RemoveFromQueue( event ){
 
 
 
-function MassQueue( event ){
+function MassQueue( event )
+{
 	
 	var iPlayerID = Players.GetLocalPlayer();
 	var mainSelected = Players.GetLocalPlayerPortraitUnit();
@@ -71,17 +75,17 @@ function MassQueue( event ){
 	
 	$.Msg("AbilityName is ", event.AbilityName);
 	
-	if (queueType == "Unit"){
+	if (queueType == "Unit")
+	{
 		for (i = 0; i < selectedEntities.length; i++)
 		{
 			$.Msg("Telling server to mass queue")
 			GameEvents.SendCustomGameEventToServer( "execute_order", { entIndex : selectedEntities[i],
-																																 ability : event.ability,
-																																 AbilityName : event.AbilityName,
-																																 WhatToQueue : event.WhatToQueue, 
-																																 QueueTime : event.QueueTime,
-																																 QueueType : event.QueueType } );
-					
+				      						   ability : event.ability,
+				 						   AbilityName : event.AbilityName,
+										   WhatToQueue : event.WhatToQueue, 
+	 									   QueueTime : event.QueueTime,
+	 									   QueueType : event.QueueType } );
 		}
 	}
 }

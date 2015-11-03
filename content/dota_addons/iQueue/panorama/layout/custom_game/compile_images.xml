@@ -11,6 +11,8 @@
 		<Image src="file://{images}/spellicons/unit_building.png" hittest="false"/>
 		<Image src="file://{images}/spellicons/research_building.png" hittest="false"/>
 		<Image src="file://{images}/spellicons/upgrade_building.png" hittest="false"/>
+		<Image src="file://{images}/spellicons/health_bonus.png" hittest="false"/>
+		<Image src="file://{images}/spellicons/damage_bonus.png" hittest="false"/>
 		
 	</Panel>
 </root>

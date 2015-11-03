@@ -20,12 +20,9 @@ function InitializeQueueTable( event ){
 				$.Msg("Initializing building queue table");
 				
 				BuildingQueueTable[index] = [];
-				BuildingQueueTable[index]['RUSlot'] = [];
 				BuildingQueueTable[index].length = 0;
 				$.Schedule( 0.1, function(){
 				BuildingQueueTable[index].timerState = "No Timer";})
-				
-				
 				//$.Msg(BuildingQueueTable[index].length)	
 		}
 	});
@@ -39,7 +36,7 @@ function GetUnitLabel( index )
 
 function AddToQueue( event ){
 	
-	//$.Msg("AddToQueue called");
+	$.Msg("AddToQueue called");
 	
 	var slotInfo = {queueTime : event.queueTime, abilityName : event.abilityName};
 	var index = event.entindex;
@@ -70,46 +67,24 @@ function MassQueue( event ){
 	var iPlayerID = Players.GetLocalPlayer();
 	var mainSelected = Players.GetLocalPlayerPortraitUnit();
 	var selectedEntities = Players.GetSelectedEntities( iPlayerID );
-
+	var queueType = event.QueueType;
+	
 	$.Msg("AbilityName is ", event.AbilityName);
 	
-	for (i = 0; i < selectedEntities.length; i++)
-	{
-		$.Msg("Telling server to mass queue")
-		GameEvents.SendCustomGameEventToServer( "mass_queue_units", { entIndex : selectedEntities[i],
-																															 ability : event.ability,
-																															 AbilityName : event.AbilityName,
-																															 WhatToQueue : event.WhatToQueue, 
-																															 QueueTime : event.QueueTime,
-																															 QueueType : event.QueueType } );		
+	if (queueType == "Unit"){
+		for (i = 0; i < selectedEntities.length; i++)
+		{
+			$.Msg("Telling server to mass queue")
+			GameEvents.SendCustomGameEventToServer( "execute_order", { entIndex : selectedEntities[i],
+																																 ability : event.ability,
+																																 AbilityName : event.AbilityName,
+																																 WhatToQueue : event.WhatToQueue, 
+																																 QueueTime : event.QueueTime,
+																																 QueueType : event.QueueType } );
+					
+		}
 	}
 }
-
-
-function ResearchOrUpgradeQueue( event )
-{
-	
-	var iPlayerID = Players.GetLocalPlayer();
-	var mainSelected = Players.GetLocalPlayerPortraitUnit();
-	var selectedEntities = Players.GetSelectedEntities( iPlayerID );
-	
-	$.Msg(selectedEntities.length);
-	
-	GameEvents.SendCustomGameEventToServer( "queue_research_or_upgrade", { entIndexMainSelected : mainSelected,
-																															 selectedEntities : selectedEntities,
-																															 ability : event.ability,
-																															 AbilityName : event.AbilityName,
-																															 WhatToQueue : event.WhatToQueue, 
-																															 QueueTime : event.QueueTime,
-																															 QueueType : event.QueueType } );		
-	
-	
-}
-
-
-
-
-
 
 
 function PushTimerToTable( timer )
@@ -141,7 +116,6 @@ function PushTimerToTable( timer )
 		GameEvents.Subscribe( "add_to_queue", AddToQueue );
 		GameEvents.Subscribe( "remove_from_queue", RemoveFromQueue );
 		GameEvents.Subscribe( "mass_queue", MassQueue );
-		GameEvents.Subscribe( "research_or_upgrade_queue", ResearchOrUpgradeQueue );
 		GameEvents.Subscribe( "show_timer", PushTimerToTable );
 })();
 

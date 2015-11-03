@@ -14,7 +14,7 @@ function UpdateTimer()
 	{
 		$.GetContextPanel().SetHasClass( "in_cooldown", false );
 	}
-	else if (m_QueueTime > 0)
+	else
 	{
 		$.GetContextPanel().SetHasClass( "in_cooldown", true );
 		var currentGameTime = Game.GetGameTime();
@@ -22,9 +22,6 @@ function UpdateTimer()
 		var timerPercent = Math.ceil( 100 * timerRemaining / m_QueueTime );
 		$( "#CooldownTimer" ).text = Math.ceil( timerRemaining );
 		$( "#CooldownOverlay" ).style.width = timerPercent+"%";
-	}
-	else{
-		$.Msg("m_QueueTime is equal or less than 0");
 	}
 	$.Schedule( 0.1, UpdateTimer );
 }

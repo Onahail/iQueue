@@ -72,7 +72,7 @@ function UpdateQueue()
 	else{
 		queueParent.SetHasClass( "_hidden", true);
 	}
-	$.Schedule( 0.05, UpdateQueue );
+	$.Schedule( 0.1, UpdateQueue );
 }
 
 
@@ -88,7 +88,7 @@ function GetQueuedInSlot( queryBuilding, i)
 
 function CheckQueue( slotNumber )
 {
-	var queueTableIndex = slotNumber - 1;
+	var queueTableIndex = slotNumber -1;
 	var mainSelected = Players.GetLocalPlayerPortraitUnit();
 	
 	if (BuildingQueueTable[mainSelected][queueTableIndex]){

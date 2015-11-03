@@ -45,8 +45,7 @@
 				"Function"			"Queue"
 				"QueueTime"			"300"
 				"QueueType"			"Upgrade"
-				"UnitName"			"Soldier"
-				//"UpgradeName"		"health_upgrade"
+				"UpgradeName"		"health_upgrade"
 		}
 	}
 }
@@ -70,7 +69,7 @@
 		{
 				"ScriptFile"		"iQueue.lua"
 				"Function"			"Queue"
-				"QueueTime"			"8"
+				"QueueTime"			"300"
 				"QueueType"			"Upgrade"
 				"UpgradeName"		"damage_upgrade"
 		}

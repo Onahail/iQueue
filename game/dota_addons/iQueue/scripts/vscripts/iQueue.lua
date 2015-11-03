@@ -75,8 +75,7 @@ function Queue( event )
 	elseif event.QueueType == "Research" then
 		whatToQueue = event.ResearchName
 	elseif event.QueueType == "Upgrade" then
-		whatToQueue = event.UnitName -- Testing upgrade and research queue behavior
-		--whatToQueue = event.UpgradeName
+		whatToQueue = event.UpgradeName
 		CustomGameEventManager:Send_ServerToPlayer( player, "research_or_upgrade_queue", {ability = event.ability, AbilityName = abilityName, WhatToQueue = whatToQueue, QueueTime = event.QueueTime, QueueType = event.QueueType} )	
 	else
 		print ("No QueueType specified... Breaking")
@@ -230,8 +229,7 @@ function StartQueue(building, queueTime, queueType )
 		elseif queueType == "Research" then
 			UnlockResearch()
 		elseif queueType =="Upgrade" then
-			SpawnUnit(building, player, playerID, team)
-			--UpdatePlayerUpgrades(building, player, playerID)
+			UpdatePlayerUpgrades(building, player, playerID)
 		else	
 			print("QueueType not specified... Breaking")
 			return;

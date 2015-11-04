@@ -43,7 +43,7 @@
 		{
 				"ScriptFile"		"iQueue.lua"
 				"Function"			"Queue"
-				"QueueTime"			"300"
+				"QueueTime"			"10"
 				"QueueType"			"Upgrade"
 				"UpgradeName"		"health_upgrade"
 		}
@@ -69,7 +69,7 @@
 		{
 				"ScriptFile"		"iQueue.lua"
 				"Function"			"Queue"
-				"QueueTime"			"300"
+				"QueueTime"			"10"
 				"QueueType"			"Upgrade"
 				"UpgradeName"		"damage_upgrade"
 		}

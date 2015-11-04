@@ -17,7 +17,7 @@ function InitializeQueueTable( event ){
 		if (unitLabel == "CanQueue")
 		{
 				
-				$.Msg("Initializing building queue table");
+				//$.Msg("Initializing building queue table");
 				
 				BuildingQueueTable[index] = [];
 				BuildingQueueTable[index]['RUSlot'] = [];
@@ -71,13 +71,12 @@ function MassQueue( event ){
 	var mainSelected = Players.GetLocalPlayerPortraitUnit();
 	var selectedEntities = Players.GetSelectedEntities( iPlayerID );
 
-	$.Msg("AbilityName is ", event.AbilityName);
+	//$.Msg("AbilityName is ", event.AbilityName);
 	
 	for (i = 0; i < selectedEntities.length; i++)
 	{
 		$.Msg("Telling server to mass queue")
 		GameEvents.SendCustomGameEventToServer( "mass_queue_units", { entIndex : selectedEntities[i],
-																															 ability : event.ability,
 																															 AbilityName : event.AbilityName,
 																															 WhatToQueue : event.WhatToQueue, 
 																															 QueueTime : event.QueueTime,
@@ -93,11 +92,10 @@ function ResearchOrUpgradeQueue( event )
 	var mainSelected = Players.GetLocalPlayerPortraitUnit();
 	var selectedEntities = Players.GetSelectedEntities( iPlayerID );
 	
-	$.Msg(selectedEntities.length);
+	//$.Msg(selectedEntities.length);
 	
 	GameEvents.SendCustomGameEventToServer( "queue_research_or_upgrade", { entIndexMainSelected : mainSelected,
 																															 selectedEntities : selectedEntities,
-																															 ability : event.ability,
 																															 AbilityName : event.AbilityName,
 																															 WhatToQueue : event.WhatToQueue, 
 																															 QueueTime : event.QueueTime,
@@ -105,11 +103,6 @@ function ResearchOrUpgradeQueue( event )
 	
 	
 }
-
-
-
-
-
 
 
 function PushTimerToTable( timer )
@@ -134,6 +127,9 @@ function PushTimerToTable( timer )
 	$.Msg(BuildingQueueTable[index][0].queueEndTime);
 	$.Msg(BuildingQueueTable[index][0].timerState);*/
 }
+
+
+
 
 
 (function () {

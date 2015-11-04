@@ -106,10 +106,14 @@ function IQueue:OnHeroInGame(hero)
 	local playerID = player:GetPlayerID()
 	print("Creating player tables for PlayerID: ", playerID)
 	
-	player['upgrades'] = {} -- Tracks all upgrades a player has completed
-	player['units'] = {} -- Tracks all units a player owns for applying upgrades
-	player['structures'] = {} -- Tracks all structures a player owns for applying upgrades
-	player['research'] = {} -- Tracks all completed research to remove it from future buildings
+	player['upgrades'] = player['upgrades'] or {} -- Tracks all upgrades a player has completed
+	player['units'] = player['units'] or {} -- Tracks all units a player owns for applying upgrades
+	player['structures'] = player['structures'] or {} -- Tracks all structures a player owns for applying upgrades
+	player['research'] = player['research'] or {} -- Tracks all completed research to remove it from future buildings
+	player['QueueTrack'] = player['QueueTrack'] or {} -- Contains flags to handle hiding/showing abilities on buildings
+	
+	table.insert(player['units'], hero)
+	
 	
 	
 end

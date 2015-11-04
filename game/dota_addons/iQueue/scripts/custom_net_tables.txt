@@ -2,6 +2,6 @@
 {
   custom_net_tables =
   [
-//    "game_state",
+		//	"iqueue_RU_handling" //Contains playerIDs for tracking upgrade and research
   ]
 }

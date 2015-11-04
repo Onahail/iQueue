@@ -102,7 +102,7 @@ function CancelQueueInSlot( slotNumber )
 	var queueTableIndex = slotNumber - 1;
 	//$.Msg("Slot number ", slotNumber, " has been double clicked");
 	if (BuildingQueueTable[mainSelected][queueTableIndex]){
-		$.Msg("Removing queue from index: ", queueTableIndex);
+		//$.Msg("Removing queue from index: ", queueTableIndex);
 		BuildingQueueTable[mainSelected].splice(queueTableIndex, 1);
 		
 		 // Sending slotNumber because Lua is stupid and its first position in a table is 1

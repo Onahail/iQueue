@@ -1,12 +1,12 @@
 --[[
 There are iQueue specific functions within OnEntityKilled and OnHeroInGame
 ]]
-require('iQueue_upgrades')
+require('BuildingQueue')
+
+UPGRADE_MODIFIER_ITEM = CreateItem( "item_upgrade_modifiers", source, source)
 
 
-MAX_BUILDING_QUEUE = 6
-
-
+-- Temporary function. Will be remove from the library
 function CreateBuilding( event )
 		local caster = event.caster
 		local hero = caster:GetPlayerOwner():GetAssignedHero()
@@ -17,45 +17,176 @@ function CreateBuilding( event )
 		local buildingName = event.Building
 		
 		local building = CreateUnitByName(buildingName, target, true, player, player, team)
+		local unitLabel = building:GetUnitLabel()
 		building:SetControllableByPlayer(playerID, true)
 		building:SetOwner(player)
 		building:SetModelScale(0.5)
 		
 		--print("Player is: ", player)
 		--print("Building is: ", building)
-		InitalizeBuildingQueue( building )
-		building.IsBuilding = true;
-		table.insert(player['structures'], building)
-		for abilityName,_ in pairs(player['QueueTrack']) do
-			--print(abilityName)
-			local ability = building:FindAbilityByName(abilityName)
-			if ability ~= nil then
-				if player['QueueTrack'][abilityName].inQueue == true then
-					ability:SetHidden(true)
-				end
-			end
+		if unitLabel == "CanQueue" then
+			BuildingQueue:InitializeBuildingEntity( building )
 		end
+
+
 		--print('Building created')
+end
+-------------------------------------------------------
+
+if iQueue == nil then
+	iQueue = {}
+	iQueue.__index = iQueue
+end
+
+function iQueue:new( o )
+	o = o or {}
+	setmetatable( o, iQueue )
+	return o
+end
+
+function iQueue:start()
+	iQueue = self
 end
 
 
-function InitalizeBuildingQueue( building )
-	local buildingName = building:GetUnitName()
-	local unitLabel = building:GetUnitLabel()
-	if unitLabel == "CanQueue" then
-		--print("Queue created for: ", buildingName)
-		building['Queue'] = {}
-		building['RUSlot'] = {}
-		
-		-- Queue slot flags for Research and Upgrade
-		-- These flags will handle queue behavior for Researchs and Upgrades
-		building['RUSlot'][1] = false;
-		building['RUSlot'][2] = false;
-		building['RUSlot'][3] = false;
-		building['RUSlot'][4] = false;
-		building['RUSlot'][5] = false;
-		building['RUSlot'][6] = false;
-		--building['Queue']['UnitTable'] = {}
+function iQueue:Init()
+
+	print("Initiating iQueue")
+
+	GameRules.AbilityKV = LoadKeyValues("scripts/npc/npc_abilities_custom.txt")
+	GameRules.UnitKV = LoadKeyValues("scripts/npc/npc_units_custom.txt")
+	GameRules.HeroKV = LoadKeyValues("scripts/npc/npc_heroes_custom.txt")
+	GameRules.ItemKV = LoadKeyValues("scripts/npc/npc_items_custom.txt")
+	GameRules.Upgrades = LoadKeyValues("scripts/kv/upgrades.kv")
+	
+	GameRules.SELECTED_BUILDINGS = {}
+	
+	--Register game listeners
+	ListenToGameEvent('entity_killed', Dynamic_Wrap(iQueue, 'EntityKilled'), self)
+	ListenToGameEvent('npc_spawned', Dynamic_Wrap(iQueue, 'NPCSpawned'), self)
+	
+	
+	--Register Custom Listeners
+	CustomGameEventManager:RegisterListener( "mass_queue_units", Dynamic_Wrap(iQueue, "MassQueueUnits"))
+	CustomGameEventManager:RegisterListener( "queue_research_or_upgrade", Dynamic_Wrap(iQueue, "QueueResearchOrUpgrade"))
+	CustomGameEventManager:RegisterListener( "remove_from_queue", Dynamic_Wrap(iQueue, "RemoveFromQueue"))
+	CustomGameEventManager:RegisterListener( "destroy_queue_timer", Dynamic_Wrap(iQueue, "DestroyQueueTimer"))
+
+end
+
+
+function iQueue:NPCSpawned( keys )
+
+	local npc = EntIndexToHScript(keys.entindex)
+
+	if npc:IsRealHero() and npc.FirstSpawn == nil then
+		npc.FirstSpawn = true
+		iQueue:HeroInGame(npc)
+	end
+end
+
+function iQueue:HeroInGame( hero )
+
+	hero.IsBuilding = false;
+	
+	local player = hero:GetOwner()
+	local playerID = player:GetPlayerID()
+	print("Creating player tables for PlayerID: ", playerID)
+	
+	player['upgrades'] = player['upgrades'] or {} -- Tracks all upgrades a player has completed
+	player['units'] = player['units'] or {} -- Tracks all units a player owns for applying upgrades
+	player['structures'] = player['structures'] or {} -- Tracks all structures a player owns for applying upgrades
+	player['research'] = player['research'] or {} -- Tracks all completed research to remove it from future buildings
+	player['QueueTrack'] = player['QueueTrack'] or {} -- Contains flags to handle hiding/showing abilities on buildings
+	
+	table.insert(player['units'], hero)
+
+
+end
+
+
+
+
+function iQueue:EntityKilled( keys )
+
+  -- The Unit that was Killed
+  local killedUnit = EntIndexToHScript( keys.entindex_killed )
+	local player = killedUnit:GetOwner()
+	
+	if killedUnit.IsBuilding == true then
+		player['structures'][killedUnit] = nil
+	else
+		player['units'][killedUnit] = nil
+	end
+	-- Uncomment this block of code is you need any of these values
+	--[[ 
+	-- The Killing entity
+  local killerEntity = nil
+  if keys.entindex_attacker ~= nil then
+    killerEntity = EntIndexToHScript( keys.entindex_attacker )
+  end
+
+  -- The ability/item used to kill, or nil if not killed by an item/ability
+  local killerAbility = nil
+
+  if keys.entindex_inflictor ~= nil then
+    killerAbility = EntIndexToHScript( keys.entindex_inflictor )
+  end
+
+  local damagebits = keys.damagebits -- This might always be 0 and therefore useless
+	]]--
+end
+
+
+function iQueue:MassQueueUnits( event )
+	print("Executing order")
+	--print("abilityName is: ", event.AbilityName)
+	local building = EntIndexToHScript(event.entIndex)
+	local queueTime = event.QueueTime
+	local queueType = event.QueueType
+	local whatToQueue = event.WhatToQueue
+	if building:FindAbilityByName(event.AbilityName) ~= nil then
+		if #building['Queue'] + 1 < MAX_BUILDING_QUEUE then
+			building['RUSlot'][#building['Queue']+1] = true;
+		end
+		building:AddToQueue( event.AbilityName, queueTime, queueType, whatToQueue )
+	else
+		print("This building does not have the specified ability")
+	end
+end
+
+
+function iQueue:QueueResearchOrUpgrade( event )
+	local mainSelectedBuilding = EntIndexToHScript(event.entIndexMainSelected)
+	local selectedEntities = event.selectedEntities
+	local queueTime = event.QueueTime
+	local queueType = event.QueueType
+	local whatToQueue = event.WhatToQueue
+	local building = FindFreeSlot(mainSelectedBuilding, selectedEntities, event.AbilityName)
+	if building ~= nil then
+			--print("Adding queue to building. Index:", building:GetEntityIndex())
+			building:AddToQueue( event.AbilityName, queueTime, queueType, whatToQueue)
+	end
+end
+
+
+
+
+
+function iQueue:RemoveFromQueue( event )
+	local building = EntIndexToHScript(event.entindex)
+	local player = building:GetOwner()
+	local queuePosition = event.slotNumber
+	local abilityName = building['Queue'][queuePosition].abilityName
+	if building['Queue'][queuePosition].queueType == ("Upgrade" or "Research") then
+		player['QueueTrack'][abilityName].inQueue = false;
+		ShowHideOrRemoveAbility( player, abilityName, building['Queue'][queuePosition].whatToQueue )
+	end
+	building['RUSlot'][#building['Queue']] = false;
+	--print("RUSlot ", #building['Queue'], "is", building['RUSlot'][#building['Queue']])
+	local x = table.remove(building['Queue'], queuePosition)
+	if queuePosition == 1 then
+		building:DestroyQueueTimer()
 	end
 end
 
@@ -81,38 +212,73 @@ function Queue( event )
 	end
 end
 
-
-function IQueue:MassQueueUnits( event )
-	print("Executing order")
-	--print("abilityName is: ", event.AbilityName)
-	local building = EntIndexToHScript(event.entIndex)
-	local queueTime = event.QueueTime
-	local queueType = event.QueueType
-	local whatToQueue = event.WhatToQueue
-	if building:FindAbilityByName(event.AbilityName) ~= nil then
-		if #building['Queue'] + 1 < MAX_BUILDING_QUEUE then
-			building['RUSlot'][#building['Queue']+1] = true;
-		end
-		AddToQueue(building, event.AbilityName, queueTime, queueType, whatToQueue)
+function UpdatePlayerUpgrades( player, upgradeName, abilityName )
+	local player_upgrades = GameRules.Upgrades
+	local maxRank = player_upgrades[upgradeName]["max_rank"]
+	local modifier = "modifier_"..upgradeName
+	--print(modifier)
+	if player['upgrades'][upgradeName] == nil then
+		player['upgrades'][upgradeName] = {}
+		player['upgrades'][upgradeName].rank = 1
+		--DeepPrintTable(player['upgrades'])
+		--print(upgradeName, "sucessfully upgraded, it is now rank 1")
+		player['QueueTrack'][abilityName].inQueue = false
+		ShowHideOrRemoveAbility( player, abilityName, upgradeName )
+	elseif maxRank > 1 and player['upgrades'][upgradeName].rank < maxRank then
+		player['upgrades'][upgradeName].rank = player['upgrades'][upgradeName].rank + 1
+		--print(upgradeName, "sucessfully upgraded again, it is now rank", player['upgrades'][upgradeName].rank)
+		player['QueueTrack'][abilityName].inQueue = false
+		ShowHideOrRemoveAbility( player, abilityName, upgradeName )
 	else
-		print("This building does not have the specified ability")
+		print("Something went wrong in UpdatePlayerUpgrades")
+	end
+	for _,unit in pairs(player['units']) do	
+		ApplyUpgrade(upgradeName, unit, modifier, player['upgrades'][upgradeName].rank)
 	end
 end
 
 
-function IQueue:QueueResearchOrUpgrade( event )
-	local mainSelectedBuilding = EntIndexToHScript(event.entIndexMainSelected)
-	local selectedEntities = event.selectedEntities
-	local queueTime = event.QueueTime
-	local queueType = event.QueueType
-	local whatToQueue = event.WhatToQueue
-	local building = FindFreeSlot(mainSelectedBuilding, selectedEntities, event.AbilityName)
-	if building ~= nil then
-			--print("Adding queue to building. Index:", building:GetEntityIndex())
-			AddToQueue(building, event.AbilityName, queueTime, queueType, whatToQueue)
+function ApplyUpgrade( upgrade, unit, modifier, rank )
+	--print("Rank within ApplyUpgrade", rank)
+	local player_upgrades = GameRules.Upgrades
+	local unitName = unit:GetUnitName()
+	
+	if player_upgrades[upgrade][unitName] then	
+		if rank == 1 then
+			GiveUnitDataDrivenModifier(unit, unit, modifier, -1)
+		elseif unit:HasModifier(modifier) then
+			unit:SetModifierStackCount(modifier, unit, rank)
+		else
+			GiveUnitDataDrivenModifier(unit, unit, modifier, -1)
+			unit:SetModifierStackCount(modifier, unit, rank)
+		end
 	end
 end
 
+
+function SpawnUnit( unit, location, player )
+
+	local playerID = player:GetPlayerID()
+	local team = player:GetTeam()
+	
+	local unitSpawned =	CreateUnitByName(unit, location, true, player, player, team)
+	unitSpawned:SetControllableByPlayer(playerID, true)
+	unitSpawned:SetOwner(player)
+	unitSpawned.IsBuilding = false;
+	table.insert(player['units'], unitSpawned)
+	--Apply owned upgrades to new spawned units
+	unitName = unitSpawned:GetUnitName()
+	
+	if player['upgrades'] ~= nil then
+		for upgradeOwned,_ in pairs(player['upgrades']) do
+			ApplyUpgrade(upgradeName, unit, modifier, player['upgrades'][upgradeName].rank)
+		end
+	end
+end
+
+
+function UnlockResearch()
+end
 
 function FindFreeSlot(mainSelectedBuilding, selectedEntities, abilityName)
 	local mainEntity = mainSelectedBuilding:GetEntityIndex()
@@ -139,125 +305,48 @@ function FindFreeSlot(mainSelectedBuilding, selectedEntities, abilityName)
 end
 
 
-function AddToQueue( building, abilityName, queueTime, queueType, whatToQueue )
 
-	local player = building:GetOwner()
-	local playerID = building:GetOwner():GetPlayerID()
-	local team = player:GetTeam()
-	local queueTable = {whatToQueue = whatToQueue, queueTime = queueTime, abilityName = abilityName, queueType = queueType}
-	building.state = building.state or "Not Building"
-	if building['Queue'] == nil then
-		InitalizeBuildingQueue( building )
-		print("Building Queue never initialized. Creating it now. This should never happen")
-	end
-	if #building['Queue'] < MAX_BUILDING_QUEUE then
-		table.insert(building['Queue'], queueTable)
-		if queueType == ("Upgrade" or "Research") then
-			player['QueueTrack'][abilityName] = abilityName;
-			player['QueueTrack'][abilityName] = {};
-			player['QueueTrack'][abilityName].inQueue = true;
-			ShowHideOrRemoveAbility(player, abilityName, building['Queue'][1].whatToQueue)
+function ShowHideOrRemoveAbility( player, abilityName, upgradeName)
+	local player_upgrades = GameRules.Upgrades
+	local maxRank = player_upgrades[upgradeName]["max_rank"]
+	if player['QueueTrack'][abilityName].inQueue == true then
+		--print(abilityName, "currently queued. Hiding from all structures")
+		for _,building in pairs(player['structures']) do
+			local ability = building:FindAbilityByName(abilityName)
+			if ability ~= nil then
+				ability:SetHidden(true)
+			end
 		end
-		CustomGameEventManager:Send_ServerToPlayer( player, "add_to_queue", { queueTime = queueTime, abilityName = abilityName, entindex = building:entindex() })
-		if building.state == "Not Building" then
-			--print ("Starting queue")
-			StartQueue(building, queueTime, queueType, abilityName)
+	elseif player['QueueTrack'][abilityName].inQueue == false then
+		--print(abilityName, "no longer queued. Showing ability if not max rank")
+		for _,building in pairs(player['structures']) do
+			local ability = building:FindAbilityByName(abilityName)
+			if ability ~= nil then
+				ability:SetHidden(false)
+			end
 		end
 	else
-		print("MAX QUEUE LIMIT REACHED!")
+		print("Something went wrong in ShowHideOrRemoveAbility")
 	end
-end
-
-
-function StartQueue(building, queueTime, queueType, abilityName )
-	local player = building:GetOwner()
-	local playerID = building:GetOwner():GetPlayerID()
-	local team = player:GetTeam()
-	local currentGameTime = GameRules:GetGameTime();
-	--print(currentGameTime)
-	--print("StartQueue called")
-	--print(queueType ,building['Queue'][1].whatToQueue, "has started, it will be finished in ", queueTime, " seconds.")
-	building.state = "Building"
-	CustomGameEventManager:Send_ServerToPlayer( player, "show_timer", { queueTime = queueTime, currentGameTime = currentGameTime, index = building:entindex() })
-	building.timer = Timers:CreateTimer(building['Queue'][1].queueTime, function()
-		if queueType == "Unit" then
-			SpawnUnit(building, player, playerID, team)
-		elseif queueType == "Research" then
-			UnlockResearch()
-		elseif queueType =="Upgrade" then
-			UpdatePlayerUpgrades(building, player, playerID, abilityName)
-		else	
-			print("QueueType not specified... Breaking")
-			return;
-		end
-		local x = table.remove(building['Queue'], 1)
-		CustomGameEventManager:Send_ServerToPlayer( player, "remove_from_queue", { entindex = building:entindex() })
-		if #building['Queue'] > 0 then
-				StartQueue( building, building['Queue'][1].queueTime, building['Queue'][1].queueType, building['Queue'][1].abilityName )
-		else
-			building.state = "Not Building"
-			return;
-		end
-	end)
-end
-
-
-function UnlockResearch()
-end
-
-
-function SpawnUnit(building, player, playerID, team)
-	local unitSpawned =	CreateUnitByName(building['Queue'][1].whatToQueue, building:GetAbsOrigin(), true, player, player, team)
-	unitSpawned:SetControllableByPlayer(playerID, true)
-	unitSpawned:SetOwner(player)
-	unitSpawned.IsBuilding = false;
-	table.insert(player['units'], unitSpawned)
-	--Apply owned upgrades to new spawned units
-	unitName = unitSpawned:GetUnitName()
-	upgradesKV = GameRules.Upgrades
-	if player['upgrades'] ~= nil then
-		for upgradeOwned,_ in pairs(player['upgrades']) do
-			--print(upgradeOwned)
-			--print(player['upgrades'][upgradeOwned].rank)
-			if upgradesKV[upgradeOwned][unitName] then
-				local modifier = "modifier_"..upgradeOwned
-				local rank = player['upgrades'][upgradeOwned].rank
-				GiveUnitDataDrivenModifier(unitSpawned, unitSpawned, modifier, -1)
-				unitSpawned:SetModifierStackCount(modifier, unitSpawned, rank)
+	if player['upgrades'][upgradeName] then
+		if player['upgrades'][upgradeName].rank == maxRank then
+			print(abilityName, "is now max rank. Removing from all buildings")
+			for _,building in pairs(player['structures']) do
+				local ability = building:FindAbilityByName(abilityName)
+				if ability ~= nil then
+					ability:SetHidden(true)
+					building:RemoveAbility(abilityName)
+				end
 			end
 		end
 	end
 end
 
 
-function IQueue:RemoveFromQueue( event )
-	local building = EntIndexToHScript(event.entindex)
-	local player = building:GetOwner()
-	local queuePosition = event.slotNumber
-	local abilityName = building['Queue'][queuePosition].abilityName
-	if building['Queue'][queuePosition].queueType == ("Upgrade" or "Research") then
-		player['QueueTrack'][abilityName].inQueue = false;
-		ShowHideOrRemoveAbility( player, abilityName, building['Queue'][queuePosition].whatToQueue )
-	end
-	building['RUSlot'][#building['Queue']] = false;
-	--print("RUSlot ", #building['Queue'], "is", building['RUSlot'][#building['Queue']])
-	local x = table.remove(building['Queue'], queuePosition)
-	if queuePosition == 1 then
-		DestroyQueueTimer( building )
-	end
+function GiveUnitDataDrivenModifier(source, target, modifier, dur)
+    --source and target should be hscript-units. The same unit can be in both source and target
+    UPGRADE_MODIFIER_ITEM:ApplyDataDrivenModifier( source, target, modifier, {duration=dur} )
 end
 
 
-function DestroyQueueTimer( building )
-	local player = building:GetOwner()
-	Timers:RemoveTimer( building.timer )
-  Timers.timers[ building.timer ] = nil
-	if #building['Queue'] > 0 then
-			StartQueue( building, building['Queue'][1].queueTime, building['Queue'][1].queueType )
-			CustomGameEventManager:Send_ServerToPlayer( player, "update_timer", { entindex = building:entindex() })
-	else
-		building.state = "Not Building"
-		CustomGameEventManager:Send_ServerToPlayer( player, "change_timer_state", { entindex = building:entindex() })
-	return;
-	end
-end
+

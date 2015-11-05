@@ -2,7 +2,7 @@
 
 require('internal/util')
 require('gamemode')
-require('IQueue')
+require('iQueue')
 
 function Precache( context )
 --[[
@@ -12,12 +12,12 @@ function Precache( context )
   any equipped cosmetics, and perform the data-driven precaching defined in that hero's
   precache{} block, as well as the precache{} block for any equipped abilities.
 
-  See IQueue:PostLoadPrecache() in IQueue.lua for more information
+  See GameMode:PostLoadPrecache() in gamemode.lua for more information
   ]]
 
   DebugPrint("[BAREBONES] Performing pre-load precache")
 
-	-- IQueue
+	-- iQueue specific functionality
 	PrecacheResource("model", "models/props_structures/bad_ancient_destruction.vmdl", context)
 	PrecacheResource("model", "models/creeps/lane_creeps/creep_bad_melee/creep_bad_melee_mega.vmdl", context)
 	PrecacheResource("model", "models/buildings/building_racks_melee_reference.vmdl", context)
@@ -50,6 +50,7 @@ end
 
 -- Create the game mode when we activate
 function Activate()
-  GameRules.IQueue = IQueue()
-  GameRules.IQueue:InitIQueue()
+  GameRules.GameMode = GameMode()
+  GameRules.GameMode:InitGameMode()
+	iQueue:Init()
 end

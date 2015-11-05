@@ -1,8 +1,8 @@
 -- This file contains all barebones-registered events and has already set up the passed-in parameters for your use.
--- Do not remove the IQueue:_Function calls in these events as it will mess with the internal barebones systems.
+-- Do not remove the GameMode:_Function calls in these events as it will mess with the internal barebones systems.
 
 -- Cleanup a player when they leave
-function IQueue:OnDisconnect(keys)
+function GameMode:OnDisconnect(keys)
   DebugPrint('[BAREBONES] Player Disconnected ' .. tostring(keys.userid))
   DebugPrintTable(keys)
 
@@ -13,30 +13,30 @@ function IQueue:OnDisconnect(keys)
 
 end
 -- The overall game state has changed
-function IQueue:OnGameRulesStateChange(keys)
+function GameMode:OnGameRulesStateChange(keys)
   DebugPrint("[BAREBONES] GameRules State Changed")
   DebugPrintTable(keys)
 
   -- This internal handling is used to set up main barebones functions
-  IQueue:_OnGameRulesStateChange(keys)
+  GameMode:_OnGameRulesStateChange(keys)
 
   local newState = GameRules:State_Get()
 end
 
 -- An NPC has spawned somewhere in game.  This includes heroes
-function IQueue:OnNPCSpawned(keys)
+function GameMode:OnNPCSpawned(keys)
   DebugPrint("[BAREBONES] NPC Spawned")
   DebugPrintTable(keys)
 
   -- This internal handling is used to set up main barebones functions
-  IQueue:_OnNPCSpawned(keys)
+  GameMode:_OnNPCSpawned(keys)
 
   local npc = EntIndexToHScript(keys.entindex)
 end
 
 -- An entity somewhere has been hurt.  This event fires very often with many units so don't do too many expensive
 -- operations here
-function IQueue:OnEntityHurt(keys)
+function GameMode:OnEntityHurt(keys)
   --DebugPrint("[BAREBONES] Entity Hurt")
   --DebugPrintTable(keys)
 
@@ -55,7 +55,7 @@ function IQueue:OnEntityHurt(keys)
 end
 
 -- An item was picked up off the ground
-function IQueue:OnItemPickedUp(keys)
+function GameMode:OnItemPickedUp(keys)
   DebugPrint( '[BAREBONES] OnItemPickedUp' )
   DebugPrintTable(keys)
 
@@ -67,13 +67,13 @@ end
 
 -- A player has reconnected to the game.  This function can be used to repaint Player-based particles or change
 -- state as necessary
-function IQueue:OnPlayerReconnect(keys)
+function GameMode:OnPlayerReconnect(keys)
   DebugPrint( '[BAREBONES] OnPlayerReconnect' )
   DebugPrintTable(keys) 
 end
 
 -- An item was purchased by a player
-function IQueue:OnItemPurchased( keys )
+function GameMode:OnItemPurchased( keys )
   DebugPrint( '[BAREBONES] OnItemPurchased' )
   DebugPrintTable(keys)
 
@@ -90,7 +90,7 @@ function IQueue:OnItemPurchased( keys )
 end
 
 -- An ability was used by a player
-function IQueue:OnAbilityUsed(keys)
+function GameMode:OnAbilityUsed(keys)
   DebugPrint('[BAREBONES] AbilityUsed')
   DebugPrintTable(keys)
 
@@ -99,7 +99,7 @@ function IQueue:OnAbilityUsed(keys)
 end
 
 -- A non-player entity (necro-book, chen creep, etc) used an ability
-function IQueue:OnNonPlayerUsedAbility(keys)
+function GameMode:OnNonPlayerUsedAbility(keys)
   DebugPrint('[BAREBONES] OnNonPlayerUsedAbility')
   DebugPrintTable(keys)
 
@@ -107,7 +107,7 @@ function IQueue:OnNonPlayerUsedAbility(keys)
 end
 
 -- A player changed their name
-function IQueue:OnPlayerChangedName(keys)
+function GameMode:OnPlayerChangedName(keys)
   DebugPrint('[BAREBONES] OnPlayerChangedName')
   DebugPrintTable(keys)
 
@@ -116,7 +116,7 @@ function IQueue:OnPlayerChangedName(keys)
 end
 
 -- A player leveled up an ability
-function IQueue:OnPlayerLearnedAbility( keys)
+function GameMode:OnPlayerLearnedAbility( keys)
   DebugPrint('[BAREBONES] OnPlayerLearnedAbility')
   DebugPrintTable(keys)
 
@@ -125,7 +125,7 @@ function IQueue:OnPlayerLearnedAbility( keys)
 end
 
 -- A channelled ability finished by either completing or being interrupted
-function IQueue:OnAbilityChannelFinished(keys)
+function GameMode:OnAbilityChannelFinished(keys)
   DebugPrint('[BAREBONES] OnAbilityChannelFinished')
   DebugPrintTable(keys)
 
@@ -134,7 +134,7 @@ function IQueue:OnAbilityChannelFinished(keys)
 end
 
 -- A player leveled up
-function IQueue:OnPlayerLevelUp(keys)
+function GameMode:OnPlayerLevelUp(keys)
   DebugPrint('[BAREBONES] OnPlayerLevelUp')
   DebugPrintTable(keys)
 
@@ -143,7 +143,7 @@ function IQueue:OnPlayerLevelUp(keys)
 end
 
 -- A player last hit a creep, a tower, or a hero
-function IQueue:OnLastHit(keys)
+function GameMode:OnLastHit(keys)
   DebugPrint('[BAREBONES] OnLastHit')
   DebugPrintTable(keys)
 
@@ -155,7 +155,7 @@ function IQueue:OnLastHit(keys)
 end
 
 -- A tree was cut down by tango, quelling blade, etc
-function IQueue:OnTreeCut(keys)
+function GameMode:OnTreeCut(keys)
   DebugPrint('[BAREBONES] OnTreeCut')
   DebugPrintTable(keys)
 
@@ -164,7 +164,7 @@ function IQueue:OnTreeCut(keys)
 end
 
 -- A rune was activated by a player
-function IQueue:OnRuneActivated (keys)
+function GameMode:OnRuneActivated (keys)
   DebugPrint('[BAREBONES] OnRuneActivated')
   DebugPrintTable(keys)
 
@@ -187,7 +187,7 @@ function IQueue:OnRuneActivated (keys)
 end
 
 -- A player took damage from a tower
-function IQueue:OnPlayerTakeTowerDamage(keys)
+function GameMode:OnPlayerTakeTowerDamage(keys)
   DebugPrint('[BAREBONES] OnPlayerTakeTowerDamage')
   DebugPrintTable(keys)
 
@@ -196,7 +196,7 @@ function IQueue:OnPlayerTakeTowerDamage(keys)
 end
 
 -- A player picked a hero
-function IQueue:OnPlayerPickHero(keys)
+function GameMode:OnPlayerPickHero(keys)
   DebugPrint('[BAREBONES] OnPlayerPickHero')
   DebugPrintTable(keys)
 
@@ -206,7 +206,7 @@ function IQueue:OnPlayerPickHero(keys)
 end
 
 -- A player killed another player in a multi-team context
-function IQueue:OnTeamKillCredit(keys)
+function GameMode:OnTeamKillCredit(keys)
   DebugPrint('[BAREBONES] OnTeamKillCredit')
   DebugPrintTable(keys)
 
@@ -217,11 +217,11 @@ function IQueue:OnTeamKillCredit(keys)
 end
 
 -- An entity died
-function IQueue:OnEntityKilled( keys )
+function GameMode:OnEntityKilled( keys )
   DebugPrint( '[BAREBONES] OnEntityKilled Called' )
   DebugPrintTable( keys )
 
-  IQueue:_OnEntityKilled( keys )
+  GameMode:_OnEntityKilled( keys )
   
 
   -- The Unit that was Killed
@@ -244,34 +244,22 @@ function IQueue:OnEntityKilled( keys )
 
   -- Put code here to handle when an entity gets killed
 	
-	
-	-- IQueue specific functionality
-	local player = killedUnit:GetOwner()
-	
-	if killedUnit.IsBuilding == true then
-		player['structures'][killedUnit] = nil
-	else
-		player['units'][killedUnit] = nil
-	end
-	
-	
-	
 end
 
 
 -- This function is called 1 to 2 times as the player connects initially but before they 
 -- have completely connected
-function IQueue:PlayerConnect(keys)
+function GameMode:PlayerConnect(keys)
   DebugPrint('[BAREBONES] PlayerConnect')
   DebugPrintTable(keys)
 end
 
 -- This function is called once when the player fully connects and becomes "Ready" during Loading
-function IQueue:OnConnectFull(keys)
+function GameMode:OnConnectFull(keys)
   DebugPrint('[BAREBONES] OnConnectFull')
   DebugPrintTable(keys)
 
-  IQueue:_OnConnectFull(keys)
+  GameMode:_OnConnectFull(keys)
   
   local entIndex = keys.index+1
   -- The Player entity of the joining user
@@ -282,7 +270,7 @@ function IQueue:OnConnectFull(keys)
 end
 
 -- This function is called whenever illusions are created and tells you which was/is the original entity
-function IQueue:OnIllusionsCreated(keys)
+function GameMode:OnIllusionsCreated(keys)
   DebugPrint('[BAREBONES] OnIllusionsCreated')
   DebugPrintTable(keys)
 
@@ -290,7 +278,7 @@ function IQueue:OnIllusionsCreated(keys)
 end
 
 -- This function is called whenever an item is combined to create a new item
-function IQueue:OnItemCombined(keys)
+function GameMode:OnItemCombined(keys)
   DebugPrint('[BAREBONES] OnItemCombined')
   DebugPrintTable(keys)
 
@@ -307,7 +295,7 @@ function IQueue:OnItemCombined(keys)
 end
 
 -- This function is called whenever an ability begins its PhaseStart phase (but before it is actually cast)
-function IQueue:OnAbilityCastBegins(keys)
+function GameMode:OnAbilityCastBegins(keys)
   DebugPrint('[BAREBONES] OnAbilityCastBegins')
   DebugPrintTable(keys)
 
@@ -316,7 +304,7 @@ function IQueue:OnAbilityCastBegins(keys)
 end
 
 -- This function is called whenever a tower is killed
-function IQueue:OnTowerKill(keys)
+function GameMode:OnTowerKill(keys)
   DebugPrint('[BAREBONES] OnTowerKill')
   DebugPrintTable(keys)
 
@@ -326,7 +314,7 @@ function IQueue:OnTowerKill(keys)
 end
 
 -- This function is called whenever a player changes there custom team selection during Game Setup 
-function IQueue:OnPlayerSelectedCustomTeam(keys)
+function GameMode:OnPlayerSelectedCustomTeam(keys)
   DebugPrint('[BAREBONES] OnPlayerSelectedCustomTeam')
   DebugPrintTable(keys)
 
@@ -336,7 +324,7 @@ function IQueue:OnPlayerSelectedCustomTeam(keys)
 end
 
 -- This function is called whenever an NPC reaches its goal position/target
-function IQueue:OnNPCGoalReached(keys)
+function GameMode:OnNPCGoalReached(keys)
   DebugPrint('[BAREBONES] OnNPCGoalReached')
   DebugPrintTable(keys)
 
@@ -346,7 +334,7 @@ function IQueue:OnNPCGoalReached(keys)
 end
 
 -- This function is called whenever any player sends a chat message to team or All
-function IQueue:OnPlayerChat(keys)
+function GameMode:OnPlayerChat(keys)
   local teamonly = keys.teamonly
   local userID = keys.userid
   local playerID = self.vUserIds[userID]:GetPlayerID()

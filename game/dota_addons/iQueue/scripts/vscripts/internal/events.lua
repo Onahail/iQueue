@@ -1,13 +1,13 @@
 -- The overall game state has changed
-function IQueue:_OnGameRulesStateChange(keys)
+function GameMode:_OnGameRulesStateChange(keys)
   local newState = GameRules:State_Get()
   if newState == DOTA_GAMERULES_STATE_WAIT_FOR_PLAYERS_TO_LOAD then
     self.bSeenWaitForPlayers = true
   elseif newState == DOTA_GAMERULES_STATE_INIT then
     --Timers:RemoveTimer("alljointimer")
   elseif newState == DOTA_GAMERULES_STATE_HERO_SELECTION then
-    IQueue:PostLoadPrecache()
-    IQueue:OnAllPlayersLoaded()
+    GameMode:PostLoadPrecache()
+    GameMode:OnAllPlayersLoaded()
 
     if USE_CUSTOM_TEAM_COLORS_FOR_PLAYERS then
       for i=0,9 do
@@ -18,22 +18,22 @@ function IQueue:_OnGameRulesStateChange(keys)
       end
     end
   elseif newState == DOTA_GAMERULES_STATE_GAME_IN_PROGRESS then
-    IQueue:OnGameInProgress()
+    GameMode:OnGameInProgress()
   end
 end
 
 -- An NPC has spawned somewhere in game.  This includes heroes
-function IQueue:_OnNPCSpawned(keys)
+function GameMode:_OnNPCSpawned(keys)
   local npc = EntIndexToHScript(keys.entindex)
 
   if npc:IsRealHero() and npc.bFirstSpawned == nil then
     npc.bFirstSpawned = true
-    IQueue:OnHeroInGame(npc)
+    GameMode:OnHeroInGame(npc)
   end
 end
 
 -- An entity died
-function IQueue:_OnEntityKilled( keys )
+function GameMode:_OnEntityKilled( keys )
   -- The Unit that was Killed
   local killedUnit = EntIndexToHScript( keys.entindex_killed )
   -- The Killing entity
@@ -59,8 +59,8 @@ function IQueue:_OnEntityKilled( keys )
 end
 
 -- This function is called once when the player fully connects and becomes "Ready" during Loading
-function IQueue:_OnConnectFull(keys)
-  IQueue:_CaptureIQueue()
+function GameMode:_OnConnectFull(keys)
+  GameMode:_CaptureGameMode()
 
   local entIndex = keys.index+1
   -- The Player entity of the joining user

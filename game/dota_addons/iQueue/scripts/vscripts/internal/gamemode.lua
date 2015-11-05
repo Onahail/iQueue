@@ -1,8 +1,7 @@
 -- This function initializes the game mode and is called before anyone loads into the game
 -- It can be used to pre-initialize any values/tables that will be needed later
-require('IQueue')
 
-function IQueue:_InitIQueue()
+function GameMode:_InitGameMode()
   -- Setup rules
   GameRules:SetHeroRespawnEnabled( ENABLE_HERO_RESPAWN )
   GameRules:SetUseUniversalShopMode( UNIVERSAL_SHOP_MODE )
@@ -61,70 +60,57 @@ function IQueue:_InitIQueue()
   -- All of these events can potentially be fired by the game, though only the uncommented ones have had
   -- Functions supplied for them.  If you are interested in the other events, you can uncomment the
   -- ListenToGameEvent line and add a function to handle the event
-  ListenToGameEvent('dota_player_gained_level', Dynamic_Wrap(IQueue, 'OnPlayerLevelUp'), self)
-  ListenToGameEvent('dota_ability_channel_finished', Dynamic_Wrap(IQueue, 'OnAbilityChannelFinished'), self)
-  ListenToGameEvent('dota_player_learned_ability', Dynamic_Wrap(IQueue, 'OnPlayerLearnedAbility'), self)
-  ListenToGameEvent('entity_killed', Dynamic_Wrap(IQueue, 'OnEntityKilled'), self)
-  ListenToGameEvent('player_connect_full', Dynamic_Wrap(IQueue, 'OnConnectFull'), self)
-  ListenToGameEvent('player_disconnect', Dynamic_Wrap(IQueue, 'OnDisconnect'), self)
-  ListenToGameEvent('dota_item_purchased', Dynamic_Wrap(IQueue, 'OnItemPurchased'), self)
-  ListenToGameEvent('dota_item_picked_up', Dynamic_Wrap(IQueue, 'OnItemPickedUp'), self)
-  ListenToGameEvent('last_hit', Dynamic_Wrap(IQueue, 'OnLastHit'), self)
-  ListenToGameEvent('dota_non_player_used_ability', Dynamic_Wrap(IQueue, 'OnNonPlayerUsedAbility'), self)
-  ListenToGameEvent('player_changename', Dynamic_Wrap(IQueue, 'OnPlayerChangedName'), self)
-  ListenToGameEvent('dota_rune_activated_server', Dynamic_Wrap(IQueue, 'OnRuneActivated'), self)
-  ListenToGameEvent('dota_player_take_tower_damage', Dynamic_Wrap(IQueue, 'OnPlayerTakeTowerDamage'), self)
-  ListenToGameEvent('tree_cut', Dynamic_Wrap(IQueue, 'OnTreeCut'), self)
-  ListenToGameEvent('entity_hurt', Dynamic_Wrap(IQueue, 'OnEntityHurt'), self)
-  ListenToGameEvent('player_connect', Dynamic_Wrap(IQueue, 'PlayerConnect'), self)
-  ListenToGameEvent('dota_player_used_ability', Dynamic_Wrap(IQueue, 'OnAbilityUsed'), self)
-  ListenToGameEvent('game_rules_state_change', Dynamic_Wrap(IQueue, 'OnGameRulesStateChange'), self)
-  ListenToGameEvent('npc_spawned', Dynamic_Wrap(IQueue, 'OnNPCSpawned'), self)
-  ListenToGameEvent('dota_player_pick_hero', Dynamic_Wrap(IQueue, 'OnPlayerPickHero'), self)
-  ListenToGameEvent('dota_team_kill_credit', Dynamic_Wrap(IQueue, 'OnTeamKillCredit'), self)
-  ListenToGameEvent("player_reconnected", Dynamic_Wrap(IQueue, 'OnPlayerReconnect'), self)
+  ListenToGameEvent('dota_player_gained_level', Dynamic_Wrap(GameMode, 'OnPlayerLevelUp'), self)
+  ListenToGameEvent('dota_ability_channel_finished', Dynamic_Wrap(GameMode, 'OnAbilityChannelFinished'), self)
+  ListenToGameEvent('dota_player_learned_ability', Dynamic_Wrap(GameMode, 'OnPlayerLearnedAbility'), self)
+  ListenToGameEvent('entity_killed', Dynamic_Wrap(GameMode, 'OnEntityKilled'), self)
+  ListenToGameEvent('player_connect_full', Dynamic_Wrap(GameMode, 'OnConnectFull'), self)
+  ListenToGameEvent('player_disconnect', Dynamic_Wrap(GameMode, 'OnDisconnect'), self)
+  ListenToGameEvent('dota_item_purchased', Dynamic_Wrap(GameMode, 'OnItemPurchased'), self)
+  ListenToGameEvent('dota_item_picked_up', Dynamic_Wrap(GameMode, 'OnItemPickedUp'), self)
+  ListenToGameEvent('last_hit', Dynamic_Wrap(GameMode, 'OnLastHit'), self)
+  ListenToGameEvent('dota_non_player_used_ability', Dynamic_Wrap(GameMode, 'OnNonPlayerUsedAbility'), self)
+  ListenToGameEvent('player_changename', Dynamic_Wrap(GameMode, 'OnPlayerChangedName'), self)
+  ListenToGameEvent('dota_rune_activated_server', Dynamic_Wrap(GameMode, 'OnRuneActivated'), self)
+  ListenToGameEvent('dota_player_take_tower_damage', Dynamic_Wrap(GameMode, 'OnPlayerTakeTowerDamage'), self)
+  ListenToGameEvent('tree_cut', Dynamic_Wrap(GameMode, 'OnTreeCut'), self)
+  ListenToGameEvent('entity_hurt', Dynamic_Wrap(GameMode, 'OnEntityHurt'), self)
+  ListenToGameEvent('player_connect', Dynamic_Wrap(GameMode, 'PlayerConnect'), self)
+  ListenToGameEvent('dota_player_used_ability', Dynamic_Wrap(GameMode, 'OnAbilityUsed'), self)
+  ListenToGameEvent('game_rules_state_change', Dynamic_Wrap(GameMode, 'OnGameRulesStateChange'), self)
+  ListenToGameEvent('npc_spawned', Dynamic_Wrap(GameMode, 'OnNPCSpawned'), self)
+  ListenToGameEvent('dota_player_pick_hero', Dynamic_Wrap(GameMode, 'OnPlayerPickHero'), self)
+  ListenToGameEvent('dota_team_kill_credit', Dynamic_Wrap(GameMode, 'OnTeamKillCredit'), self)
+  ListenToGameEvent("player_reconnected", Dynamic_Wrap(GameMode, 'OnPlayerReconnect'), self)
 
-  ListenToGameEvent("dota_illusions_created", Dynamic_Wrap(IQueue, 'OnIllusionsCreated'), self)
-  ListenToGameEvent("dota_item_combined", Dynamic_Wrap(IQueue, 'OnItemCombined'), self)
-  ListenToGameEvent("dota_player_begin_cast", Dynamic_Wrap(IQueue, 'OnAbilityCastBegins'), self)
-  ListenToGameEvent("dota_tower_kill", Dynamic_Wrap(IQueue, 'OnTowerKill'), self)
-  ListenToGameEvent("dota_player_selected_custom_team", Dynamic_Wrap(IQueue, 'OnPlayerSelectedCustomTeam'), self)
-  ListenToGameEvent("dota_npc_goal_reached", Dynamic_Wrap(IQueue, 'OnNPCGoalReached'), self)
+  ListenToGameEvent("dota_illusions_created", Dynamic_Wrap(GameMode, 'OnIllusionsCreated'), self)
+  ListenToGameEvent("dota_item_combined", Dynamic_Wrap(GameMode, 'OnItemCombined'), self)
+  ListenToGameEvent("dota_player_begin_cast", Dynamic_Wrap(GameMode, 'OnAbilityCastBegins'), self)
+  ListenToGameEvent("dota_tower_kill", Dynamic_Wrap(GameMode, 'OnTowerKill'), self)
+  ListenToGameEvent("dota_player_selected_custom_team", Dynamic_Wrap(GameMode, 'OnPlayerSelectedCustomTeam'), self)
+  ListenToGameEvent("dota_npc_goal_reached", Dynamic_Wrap(GameMode, 'OnNPCGoalReached'), self)
 
-  ListenToGameEvent("player_chat", Dynamic_Wrap(IQueue, 'OnPlayerChat'), self)
+  ListenToGameEvent("player_chat", Dynamic_Wrap(GameMode, 'OnPlayerChat'), self)
   
-  --ListenToGameEvent("dota_tutorial_shop_toggled", Dynamic_Wrap(IQueue, 'OnShopToggled'), self)
+  --ListenToGameEvent("dota_tutorial_shop_toggled", Dynamic_Wrap(GameMode, 'OnShopToggled'), self)
 
-  --ListenToGameEvent('player_spawn', Dynamic_Wrap(IQueue, 'OnPlayerSpawn'), self)
-  --ListenToGameEvent('dota_unit_event', Dynamic_Wrap(IQueue, 'OnDotaUnitEvent'), self)
-  --ListenToGameEvent('nommed_tree', Dynamic_Wrap(IQueue, 'OnPlayerAteTree'), self)
-  --ListenToGameEvent('player_completed_game', Dynamic_Wrap(IQueue, 'OnPlayerCompletedGame'), self)
-  --ListenToGameEvent('dota_match_done', Dynamic_Wrap(IQueue, 'OnDotaMatchDone'), self)
-  --ListenToGameEvent('dota_combatlog', Dynamic_Wrap(IQueue, 'OnCombatLogEvent'), self)
-  --ListenToGameEvent('dota_player_killed', Dynamic_Wrap(IQueue, 'OnPlayerKilled'), self)
-  --ListenToGameEvent('player_team', Dynamic_Wrap(IQueue, 'OnPlayerTeam'), self)
+  --ListenToGameEvent('player_spawn', Dynamic_Wrap(GameMode, 'OnPlayerSpawn'), self)
+  --ListenToGameEvent('dota_unit_event', Dynamic_Wrap(GameMode, 'OnDotaUnitEvent'), self)
+  --ListenToGameEvent('nommed_tree', Dynamic_Wrap(GameMode, 'OnPlayerAteTree'), self)
+  --ListenToGameEvent('player_completed_game', Dynamic_Wrap(GameMode, 'OnPlayerCompletedGame'), self)
+  --ListenToGameEvent('dota_match_done', Dynamic_Wrap(GameMode, 'OnDotaMatchDone'), self)
+  --ListenToGameEvent('dota_combatlog', Dynamic_Wrap(GameMode, 'OnCombatLogEvent'), self)
+  --ListenToGameEvent('dota_player_killed', Dynamic_Wrap(GameMode, 'OnPlayerKilled'), self)
+  --ListenToGameEvent('player_team', Dynamic_Wrap(GameMode, 'OnPlayerTeam'), self)
 
   --[[This block is only used for testing events handling in the event that Valve adds more in the future
   Convars:RegisterCommand('events_test', function()
-      IQueue:StartEventTest()
+      GameMode:StartEventTest()
     end, "events test", 0)]]
 	
 	
 	
-	--IQueue Specific
-	GameRules.AbilityKV = LoadKeyValues("scripts/npc/npc_abilities_custom.txt")
-	GameRules.UnitKV = LoadKeyValues("scripts/npc/npc_units_custom.txt")
-	GameRules.HeroKV = LoadKeyValues("scripts/npc/npc_heroes_custom.txt")
-	GameRules.ItemKV = LoadKeyValues("scripts/npc/npc_items_custom.txt")
-	GameRules.Upgrades = LoadKeyValues("scripts/kv/upgrades.kv")
-	
-	GameRules.SELECTED_BUILDINGS = {}
-	
-	-- Register Listeners
-	CustomGameEventManager:RegisterListener( "mass_queue_units", Dynamic_Wrap(IQueue, "MassQueueUnits"))
-	CustomGameEventManager:RegisterListener( "queue_research_or_upgrade", Dynamic_Wrap(IQueue, "QueueResearchOrUpgrade"))
-	CustomGameEventManager:RegisterListener( "remove_from_queue", Dynamic_Wrap(IQueue, "RemoveFromQueue"))
-	CustomGameEventManager:RegisterListener( "destroy_queue_timer", Dynamic_Wrap(IQueue, "DestroyQueueTimer"))
+
 		
 		
 		
@@ -149,15 +135,15 @@ function IQueue:_InitIQueue()
   self.bSeenWaitForPlayers = false
   self.vUserIds = {}
 
-  DebugPrint('[BAREBONES] Done loading Barebones IQueue!\n\n')
+  DebugPrint('[BAREBONES] Done loading Barebones GameMode!\n\n')
 end
 
 mode = nil
 
--- This function is called as the first player loads and sets up the IQueue parameters
-function IQueue:_CaptureIQueue()
+-- This function is called as the first player loads and sets up the GameMode parameters
+function GameMode:_CaptureGameMode()
   if mode == nil then
-    -- Set IQueue parameters
+    -- Set GameMode parameters
     mode = GameRules:GetGameModeEntity()        
     mode:SetRecommendedItemsDisabled( RECOMMENDED_BUILDS_DISABLED )
     mode:SetCameraDistanceOverride( CAMERA_DISTANCE_OVERRIDE )

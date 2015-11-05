@@ -5,9 +5,9 @@
 -- You can also change the cvar 'barebones_spew' at any time to 1 or 0 for output/no output
 BAREBONES_DEBUG_SPEW = false 
 
-if IQueue == nil then
+if GameMode == nil then
     DebugPrint( '[BAREBONES] creating barebones game mode' )
-    _G.IQueue = class({})
+    _G.GameMode = class({})
 end
 
 -- This library allow for easily delayed/timed actions
@@ -48,7 +48,7 @@ require('events')
 
   This function should generally only be used if the Precache() function in addon_game_mode.lua is not working.
 ]]
-function IQueue:PostLoadPrecache()
+function GameMode:PostLoadPrecache()
   DebugPrint("[BAREBONES] Performing Post-Load precache")    
   --PrecacheItemByNameAsync("item_example_item", function(...) end)
   --PrecacheItemByNameAsync("example_ability", function(...) end)
@@ -59,9 +59,9 @@ end
 
 --[[
   This function is called once and only once as soon as the first player (almost certain to be the server in local lobbies) loads in.
-  It can be used to initialize state that isn't initializeable in InitIQueue() but needs to be done before everyone loads in.
+  It can be used to initialize state that isn't initializeable in InitGameMode() but needs to be done before everyone loads in.
 ]]
-function IQueue:OnFirstPlayerLoaded()
+function GameMode:OnFirstPlayerLoaded()
   DebugPrint("[BAREBONES] First Player has loaded")
 end
 
@@ -69,7 +69,7 @@ end
   This function is called once and only once after all players have loaded into the game, right as the hero selection time begins.
   It can be used to initialize non-hero player state or adjust the hero selection (i.e. force random etc)
 ]]
-function IQueue:OnAllPlayersLoaded()
+function GameMode:OnAllPlayersLoaded()
   DebugPrint("[BAREBONES] All Players have loaded into the game")
 end
 
@@ -80,9 +80,11 @@ end
 
   The hero parameter is the hero entity that just spawned in
 ]]
-function IQueue:OnHeroInGame(hero)
+function GameMode:OnHeroInGame(hero)
   DebugPrint("[BAREBONES] Hero spawned in game for first time -- " .. hero:GetUnitName())
 
+	
+	print("[BAREBONES] Hero spawned in game for first time -- " .. hero:GetUnitName())
   -- This line for example will set the starting gold of every hero to 500 unreliable gold
   hero:SetGold(500, false)
 
@@ -97,25 +99,6 @@ function IQueue:OnHeroInGame(hero)
   hero:RemoveAbility(abil:GetAbilityName())
   hero:AddAbility("example_ability")]]
 	
-	
-	
-	--IQueue specific functionality
-	hero.IsBuilding = false;
-	
-	local player = hero:GetOwner()
-	local playerID = player:GetPlayerID()
-	print("Creating player tables for PlayerID: ", playerID)
-	
-	player['upgrades'] = player['upgrades'] or {} -- Tracks all upgrades a player has completed
-	player['units'] = player['units'] or {} -- Tracks all units a player owns for applying upgrades
-	player['structures'] = player['structures'] or {} -- Tracks all structures a player owns for applying upgrades
-	player['research'] = player['research'] or {} -- Tracks all completed research to remove it from future buildings
-	player['QueueTrack'] = player['QueueTrack'] or {} -- Contains flags to handle hiding/showing abilities on buildings
-	
-	table.insert(player['units'], hero)
-	
-	
-	
 end
 
 --[[
@@ -123,7 +106,7 @@ end
   gold will begin to go up in ticks if configured, creeps will spawn, towers will become damageable etc.  This function
   is useful for starting any game logic timers/thinkers, beginning the first round, etc.
 ]]
-function IQueue:OnGameInProgress()
+function GameMode:OnGameInProgress()
   DebugPrint("[BAREBONES] The game has officially begun")
 
   Timers:CreateTimer(30, -- Start this timer 30 game-time seconds later
@@ -137,23 +120,23 @@ end
 
 -- This function initializes the game mode and is called before anyone loads into the game
 -- It can be used to pre-initialize any values/tables that will be needed later
-function IQueue:InitIQueue()
-  IQueue = self
-  DebugPrint('[BAREBONES] Starting to load Barebones IQueue...')
+function GameMode:InitGameMode()
+  GameMode = self
+  DebugPrint('[BAREBONES] Starting to load Barebones GameMode...')
 
   -- Call the internal function to set up the rules/behaviors specified in constants.lua
   -- This also sets up event hooks for all event handlers in events.lua
-  -- Check out internals/IQueue to see/modify the exact code
-  IQueue:_InitIQueue()
+  -- Check out internals/GameMode to see/modify the exact code
+  GameMode:_InitGameMode()
 
   -- Commands can be registered for debugging purposes or as functions that can be called by the custom Scaleform UI
-  Convars:RegisterCommand( "command_example", Dynamic_Wrap(IQueue, 'ExampleConsoleCommand'), "A console command example", FCVAR_CHEAT )
+  Convars:RegisterCommand( "command_example", Dynamic_Wrap(GameMode, 'ExampleConsoleCommand'), "A console command example", FCVAR_CHEAT )
 
-  DebugPrint('[BAREBONES] Done loading Barebones IQueue!\n\n')
+  DebugPrint('[BAREBONES] Done loading Barebones GameMode!\n\n')
 end
 
 -- This is an example console command
-function IQueue:ExampleConsoleCommand()
+function GameMode:ExampleConsoleCommand()
   print( '******* Example Console Command ***************' )
   local cmdPlayer = Convars:GetCommandClient()
   if cmdPlayer then

@@ -34,18 +34,7 @@ end
 -------------------------------------------------------
 
 if iQueue == nil then
-	iQueue = {}
-	iQueue.__index = iQueue
-end
-
-function iQueue:new( o )
-	o = o or {}
-	setmetatable( o, iQueue )
-	return o
-end
-
-function iQueue:start()
-	iQueue = self
+	_G.iQueue = class({})
 end
 
 
@@ -64,7 +53,7 @@ function iQueue:Init()
 	--Register game listeners
 	ListenToGameEvent('entity_killed', Dynamic_Wrap(iQueue, 'EntityKilled'), self)
 	ListenToGameEvent('npc_spawned', Dynamic_Wrap(iQueue, 'NPCSpawned'), self)
-	
+	ListenToGameEvent('player_connect_full', Dynamic_Wrap(iQueue, 'PlayerFullyConnected'), self)
 	
 	--Register Custom Listeners
 	CustomGameEventManager:RegisterListener( "mass_queue_units", Dynamic_Wrap(iQueue, "MassQueueUnits"))
@@ -73,7 +62,6 @@ function iQueue:Init()
 	CustomGameEventManager:RegisterListener( "destroy_queue_timer", Dynamic_Wrap(iQueue, "DestroyQueueTimer"))
 
 end
-
 
 function iQueue:NPCSpawned( keys )
 
@@ -90,7 +78,19 @@ function iQueue:HeroInGame( hero )
 	hero.IsBuilding = false;
 	
 	local player = hero:GetOwner()
-	local playerID = player:GetPlayerID()
+	
+	table.insert(player['units'], hero)
+end
+
+function iQueue:PlayerFullyConnected( keys )
+	
+	print("Player fully loaded. Initializing iQueue tables.")
+	
+  local entIndex = keys.index+1
+	print(entIndex+1)
+  local player = EntIndexToHScript(entIndex)
+  local playerID = player:GetPlayerID()
+	
 	print("Creating player tables for PlayerID: ", playerID)
 	
 	player['upgrades'] = player['upgrades'] or {} -- Tracks all upgrades a player has completed
@@ -99,11 +99,8 @@ function iQueue:HeroInGame( hero )
 	player['research'] = player['research'] or {} -- Tracks all completed research to remove it from future buildings
 	player['QueueTrack'] = player['QueueTrack'] or {} -- Contains flags to handle hiding/showing abilities on buildings
 	
-	table.insert(player['units'], hero)
-
 
 end
-
 
 
 
@@ -214,6 +211,7 @@ end
 
 function UpdatePlayerUpgrades( player, upgradeName, abilityName )
 	local player_upgrades = GameRules.Upgrades
+	print(upgradeName)
 	local maxRank = player_upgrades[upgradeName]["max_rank"]
 	local modifier = "modifier_"..upgradeName
 	--print(modifier)
@@ -271,7 +269,8 @@ function SpawnUnit( unit, location, player )
 	
 	if player['upgrades'] ~= nil then
 		for upgradeOwned,_ in pairs(player['upgrades']) do
-			ApplyUpgrade(upgradeName, unit, modifier, player['upgrades'][upgradeName].rank)
+			local modifier = "modifier_"..upgradeOwned
+			ApplyUpgrade(upgradeOwned, unitSpawned, modifier, player['upgrades'][upgradeOwned].rank)
 		end
 	end
 end
@@ -309,34 +308,22 @@ end
 function ShowHideOrRemoveAbility( player, abilityName, upgradeName)
 	local player_upgrades = GameRules.Upgrades
 	local maxRank = player_upgrades[upgradeName]["max_rank"]
-	if player['QueueTrack'][abilityName].inQueue == true then
-		--print(abilityName, "currently queued. Hiding from all structures")
-		for _,building in pairs(player['structures']) do
-			local ability = building:FindAbilityByName(abilityName)
-			if ability ~= nil then
-				ability:SetHidden(true)
-			end
+	
+	for _,building in pairs(player['structures']) do
+		if player['QueueTrack'][abilityName].inQueue == true then
+			building:HideAbility(abilityName)
+		elseif player['QueueTrack'][abilityName].inQueue == false then
+			building:ShowAbility(abilityName)
+		else
+			print("Something went wrong in ShowHideOrRemoveAbility")
 		end
-	elseif player['QueueTrack'][abilityName].inQueue == false then
-		--print(abilityName, "no longer queued. Showing ability if not max rank")
-		for _,building in pairs(player['structures']) do
-			local ability = building:FindAbilityByName(abilityName)
-			if ability ~= nil then
-				ability:SetHidden(false)
-			end
-		end
-	else
-		print("Something went wrong in ShowHideOrRemoveAbility")
 	end
+	
 	if player['upgrades'][upgradeName] then
 		if player['upgrades'][upgradeName].rank == maxRank then
 			print(abilityName, "is now max rank. Removing from all buildings")
 			for _,building in pairs(player['structures']) do
-				local ability = building:FindAbilityByName(abilityName)
-				if ability ~= nil then
-					ability:SetHidden(true)
-					building:RemoveAbility(abilityName)
-				end
+				building:RemoveAbility(abilityName)
 			end
 		end
 	end

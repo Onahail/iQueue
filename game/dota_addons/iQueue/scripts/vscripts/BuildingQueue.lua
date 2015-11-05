@@ -1,27 +1,19 @@
 MAX_BUILDING_QUEUE = 6
+BUILDING_THINK = 0.01
 
 
 
 if BuildingQueue == nil then
 	print ('[BUILDINGQUEUE] creating BuildingQueue')
-	BuildingQueue = {}
-	BuildingQueue.__index = BuildingQueue
+	_G.BuildingQueue = class({})
 end
 
-function BuildingQueue:new( o )
-	o = o or {}
-	setmetatable( o, BuildingQueue )
-	return o
-end
-
-function BuildingQueue:start()
-	BuildingQueue = self
-end
 
 function BuildingQueue:InitializeBuildingEntity( building )
 
 	local owner = building:GetOwner()
 	
+	building.queueCancelled = false
 	building.IsBuilding = true;
 	building.state = "Not Building"
 	table.insert(owner['structures'], building)
@@ -73,35 +65,50 @@ function BuildingQueue:InitializeBuildingEntity( building )
 	function building:StartQueue( queueTime, queueType, abilityName )
 
 		local currentGameTime = GameRules:GetGameTime();
+		local endTime = building['Queue'][1].queueTime + currentGameTime
 		print(queueType ,building['Queue'][1].whatToQueue, "has started, it will be finished in ", queueTime, " seconds.")
 		building.state = "Building"
 		CustomGameEventManager:Send_ServerToPlayer( owner, "show_timer", { queueTime = queueTime, currentGameTime = currentGameTime, index = building:entindex() })
-		building.timer = Timers:CreateTimer(building['Queue'][1].queueTime, function()
-			if queueType == "Unit" then
-				SpawnUnit(building['Queue'][1].whatToQueue, building:GetAbsOrigin(), owner )
-			elseif queueType == "Research" then
-				UnlockResearch()
-			elseif queueType =="Upgrade" then
-				local upgradeName = building['Queue'][1].whatToQueue
-				UpdatePlayerUpgrades( owner, building['Queue'][1].whatToQueue, abilityName )
-			else	
-				print("QueueType not specified... Breaking")
-				return;
-			end
-			local x = table.remove(building['Queue'], 1)
-			CustomGameEventManager:Send_ServerToPlayer( owner, "remove_from_queue", { entindex = building:entindex() })
-			if #building['Queue'] > 0 then
-					StartQueue( building, building['Queue'][1].queueTime, building['Queue'][1].queueType, building['Queue'][1].abilityName )
+	
+		building:SetThink(function()
+			local v = endTime - GameRules:GetGameTime()
+			if v > 0 and building.queueCancelled ~= true then
+				return BUILDING_THINK
+			elseif building.queueCancelled ~= true then
+				if queueType == "Unit" then
+					SpawnUnit(building['Queue'][1].whatToQueue, building:GetAbsOrigin(), owner )
+				elseif queueType == "Research" then
+					UnlockResearch()
+				elseif queueType =="Upgrade" then
+					local upgradeName = building['Queue'][1].whatToQueue
+					UpdatePlayerUpgrades( owner, building['Queue'][1].whatToQueue, abilityName )
+				else	
+					print("QueueType not specified... Breaking")
+					return;
+				end
+				local x = table.remove(building['Queue'], 1)
+				CustomGameEventManager:Send_ServerToPlayer( owner, "remove_from_queue", { entindex = building:entindex() })
+				if #building['Queue'] > 0 then
+					building:StartQueue( building['Queue'][1].queueTime, building['Queue'][1].queueType, building['Queue'][1].abilityName )
+					return BUILDING_THINK
+				else
+					building.state = "Not Building"
+					return nil
+				end
 			else
-				building.state = "Not Building"
-				return;
-			end
+				building.queueCancelled = false
+				if #building['Queue'] > 0 then
+					return BUILDING_THINK
+				else
+					return nil
+				end
+			end	
 		end)
 	end
+	
 		
 	function building:DestroyQueueTimer()
-		Timers:RemoveTimer( building.timer )
-		Timers.timers[ building.timer ] = nil
+		building.queueCancelled = true
 		if #building['Queue'] > 0 then
 				building:StartQueue( building['Queue'][1].queueTime, building['Queue'][1].queueType )
 				CustomGameEventManager:Send_ServerToPlayer( owner, "update_timer", { entindex = building:entindex() })
@@ -111,6 +118,30 @@ function BuildingQueue:InitializeBuildingEntity( building )
 		return;
 		end
 	end
+	
+	function building:HideAbility( abilityName )
+		local ability = building:FindAbilityByName(abilityName)
+		if ability ~= nil then
+			ability:SetHidden(true)
+		end	
+	end	
+	
+	function building:ShowAbility( abilityName )
+		local ability = building:FindAbilityByName(abilityName)
+		if ability ~= nil then
+			ability:SetHidden(false)
+		end
+	end
+	
+	function building:RemoveAbility( abilityName )
+		local ability = building:FindAbilityByName(abilityName)
+		if ability ~= nil then
+			ability:SetHidden(true)
+			building:RemoveAbility(abilityName)
+		end
+	end
+	
+	
 
 
 

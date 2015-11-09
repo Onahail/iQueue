@@ -2,7 +2,7 @@
 
 **This is not yet finished, not all functionalities implemented**
 
-**[Installation Instructions](#Installation)**
+**[Installation](#Installation)**
 
 ## To-Do List:
 - Custom border color depending on queue type (research, upgrade, unit)

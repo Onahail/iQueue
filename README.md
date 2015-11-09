@@ -38,7 +38,7 @@ Lua based Queue system with interactive Panorama UI
 - Cancel anything in the queue at any time by clicking on its respective slot
 - Image on queue will indicate what is being built
 
-Unit Creation
+##### Unit Creation
 - Building units on multiple buildings simulatenously as long as resources allow
 - Will skip over any buildings without the capability of doing so
 - Two seperate queue styles (specified in settings)
@@ -49,7 +49,7 @@ Unit Creation
   * Type 2: Queue as many units as player wants, resources will be deducted on build start.
     - Queue will pause if resources no longer allow, and restart and deduct resources immediately when available
 
-Rally Points
+##### Rally Points
 - Apply a rally point for any building labled with "CanRally"
 - Rally point flags hide themselves when the building isn't selected
 - Panorama UI button to remove the rally point for every selected building
@@ -64,7 +64,7 @@ Rally Points
     ~ Only available to buildings labeled as both "ResReturn" and "CanQueue"
     ~ If only labeled as "ResReturn" it will still be tracked for resource returning.
 
-Research
+##### Research
 - Removes the ability from every other building owned and created while in queue
 - Removes the ability from every other building owned and created after completion
 - Replace the disabled version of each ability with the usable ability after completion
@@ -72,7 +72,7 @@ Research
 - Multiple researches can be queued at one building and they will be pushed to other buildings with the ability
 - Resources will be deducted immediately upon cast
 
-Upgrades
+##### Upgrades
 - Removes the ability from every other building owned and created while in queue
 - Removes the ability from every other building owned and created when max rank
 - Modifier based upgrades
@@ -82,14 +82,14 @@ Upgrades
 - Multiple upgrades can be queued at one building and they will be pushed to other buildings with the ability
 - Resources will be deducted immediately upon cast
 
-Population
+##### Population
 - Will control population count. User can set max and base population in settings
 - Any building labeled "PopSource" will increment the population max up to max value
   * Population value for that building can be specified in units KV as "PopValue"
 - Any unit or building labled "PopCost" will increment the players current population up to the current max population
   * Population cost for that building can be specified in units KV as "PopCost"
 
-Resources
+##### Resources
 - Currently has functionality to handle Gold, Lumber, and Population
   * If custom resources need to be added feel free to either edit the code or put in a suggestion
 - Functions to modify lumber, gold, and population are handled by a class each player is part of.
@@ -97,7 +97,7 @@ Resources
 - Panorama UI layout for Gold, Lumber, and Population
   * Each can individually be disabled depending on what the user wants
 
-Harvesting
+##### Harvesting
 - Full functionality to handle harvesting trees. 
 - Units labeled as "CanHarvest" will automatically be given the appropriate abilities upon spawn.
   * No need to add those abilities to each unit

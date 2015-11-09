@@ -17,9 +17,14 @@ To-Do List:
 - Implement resource control
 - Implement harvesting system
 
-iQueue contains the following functionalities for recreating your favorite WC3 Custom Game in DOTA 2. 
-
-Queue System, Research, Upgrades, Unit Creation, Population, Resource Control, and Harvesting
+iQueue handles the following 
+- Queue System
+- Ability Research
+- Unit/Building Upgrades
+- Unit Creation
+- Population
+- Resource Control
+- Harvesting
 
 Population, Resource Control, and Harvesting can be disabled in settings so copying those files is not necessary.
 

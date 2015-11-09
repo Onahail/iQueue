@@ -1,7 +1,6 @@
 # iQueue
 
 **This is not yet finished, not all functionalities implemented**
-
 [Installation Instructions](#Installation) (Add link to intall instructions upon release)
 
 ## To-Do List:
@@ -104,4 +103,4 @@ Harvesting
 - Resource return point tracking. Buildings labeled as "ResReturn" will be utilized for depositing resources.
   * Will return to the nearest resource return structure in terms of pathing distance
 
-##Installation
+## Installation

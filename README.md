@@ -2,7 +2,7 @@
 
 **This is not yet finished, not all functionalities implemented**
 
---> **[Installation Instructions](#Installation)** (Add link to intall instructions upon release)
+**[Installation Instructions](#Installation)**
 
 ## To-Do List:
 - Custom border color depending on queue type (research, upgrade, unit)
@@ -105,3 +105,5 @@ Harvesting
   * Will return to the nearest resource return structure in terms of pathing distance
 
 ## Installation
+
+This is not yet finished. Installing it now would be pointless

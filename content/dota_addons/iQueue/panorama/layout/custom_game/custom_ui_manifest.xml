@@ -1,7 +1,8 @@
 <root>
  <Panel>
-		<CustomUIElement type="Hud" layoutfile="file://{resources}/layout/custom_game/compile_images.xml" /> 
+		<CustomUIElement type="HeroSelection" layoutfile="file://{resources}/layout/custom_game/compile_images.xml" /> 
 		<CustomUIElement type="Hud" layoutfile="file://{resources}/layout/custom_game/iqueue_hud.xml" /> 
+		<CustomUIElement type="Hud" layoutfile="file://{resources}/layout/custom_game/rally_point_button.xml" /> 
   </Panel>
 </root>
 

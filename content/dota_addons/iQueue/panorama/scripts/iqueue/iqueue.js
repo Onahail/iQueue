@@ -2,7 +2,7 @@
 
 //panel.DeleteAsync(0) 
 
-var BuildingQueueTable = BuildingQueueTable || [];
+var BuildingQueueTable = {};
 
 
 function InitializeQueueTable( event ){
@@ -12,9 +12,7 @@ function InitializeQueueTable( event ){
 	
 	$.Schedule( 0.1, function(){
 		
-		var unitLabel = GetUnitLabel(index);
-		
-		if (unitLabel == "CanQueue")
+		if (FindUnitLabel(index, "CanQueue"))
 		{
 				
 				//$.Msg("Initializing building queue table");
@@ -31,10 +29,14 @@ function InitializeQueueTable( event ){
 	});
 }
 
-function GetUnitLabel( index )
+function FindUnitLabel( index, queryLabel )
 { 
 	 	var unitLabel = Entities.GetUnitLabel( index );
-		return unitLabel;
+		var re = RegExp(queryLabel);
+		if (unitLabel.match(re)){
+			return true;
+		}else{
+			return false;}
 }
 
 function AddToQueue( event ){

@@ -1,0 +1,138 @@
+"barracks"
+{
+	// General
+	//----------------------------------------------------------------
+	"BaseClass"						"npc_dota_creature"
+	"Model"								"models/props_structures/bad_ancient_destruction.vmdl"
+	"ModelScale"					"0.2"
+	"Level"								"2"
+	"HealthBarOffset"			"140"
+	"HasInventory"				"0"
+	"ConsideredHero"			"1"
+	"UnitLabel"						"CanQueue CanRally"
+	
+	// Abilities
+	//----------------------------------------------------------------
+	"AbilityLayout"				"4"
+	"Ability1"						"queue_unit"
+	"Ability2"						""
+	//"Ability3"					""
+	//"Ability4"					""
+
+	// Armor
+	//----------------------------------------------------------------
+	"ArmorPhysical"				"5"
+	"MagicalResistance"			"0"
+	
+	// Attack
+	//----------------------------------------------------------------
+	"AttackCapabilities"		"DOTA_UNIT_CAP_NO_ATTACK"
+	"AttackDamageType"			"DAMAGE_TYPE_ArmorPhysical"
+	"AttackDamageMin"			"0"
+	"AttackDamageMax"			"0"
+	
+	// Bounty
+	//----------------------------------------------------------------
+	"BountyGoldMin"				"0.0"
+	"BountyGoldMax"				"0.0"
+	
+	// Bounds
+	//----------------------------------------------------------------
+	"BoundsHullName"			"DOTA_HULL_SIZE_HUGE"
+	"RingRadius"					"220"
+	"CollisionSize"				"100"
+		
+	// Movement
+	//----------------------------------------------------------------
+	"MovementCapabilities"		"DOTA_UNIT_CAP_MOVE_NONE"
+	"MovementSpeed"				"0"
+	
+	// Status
+	//----------------------------------------------------------------
+	"StatusHealth"				"2000"
+	"StatusHealthRegen"		"0"
+	"StatusMana"					"100"
+	"StatusManaRegen"			"0"
+	
+	// Vision
+	//----------------------------------------------------------------
+	"VisionDaytimeRange"		"900"
+	"VisionNighttimeRange"		"600"
+	
+	// Team
+	//----------------------------------------------------------------
+	"TeamName"								"DOTA_TEAM_NEUTRALS"
+	"CombatClassAttack"				"DOTA_COMBAT_CLASS_ATTACK_BASIC"
+	"CombatClassDefend"				"DOTA_COMBAT_CLASS_DEFEND_STRUCTURE"
+	"UnitRelationShipClass"		"DOTA_NPC_UNIT_RELATIONSHIP_TYPE_BUILDING"
+	
+}
+"tech_lab"
+{
+	// General
+	//----------------------------------------------------------------
+	"BaseClass"						"npc_dota_creature"
+	"Model"								"models/buildings/building_racks_melee_reference.vmdl"
+	"ModelScale"					"2"
+	"Level"								"2"
+	"HealthBarOffset"			"140"
+	"HasInventory"				"0"
+	"ConsideredHero"			"1"
+	"UnitLabel"						"CanQueue"
+	
+	// Abilities
+	//----------------------------------------------------------------
+	"AbilityLayout"				"4"
+	"Ability1"						"queue_health_upgrade"
+	"Ability2"						"queue_damage_upgrade"
+	//"Ability3"					""
+	//"Ability4"					""
+
+	// Armor
+	//----------------------------------------------------------------
+	"ArmorPhysical"				"5"
+	"MagicalResistance"			"0"
+	
+	// Attack
+	//----------------------------------------------------------------
+	"AttackCapabilities"		"DOTA_UNIT_CAP_NO_ATTACK"
+	"AttackDamageType"			"DAMAGE_TYPE_ArmorPhysical"
+	"AttackDamageMin"			"0"
+	"AttackDamageMax"			"0"
+	
+	// Bounty
+	//----------------------------------------------------------------
+	"BountyGoldMin"				"0.0"
+	"BountyGoldMax"				"0.0"
+	
+	// Bounds
+	//----------------------------------------------------------------
+	"BoundsHullName"			"DOTA_HULL_SIZE_HUGE"
+	"RingRadius"					"220"
+	"CollisionSize"				"100"
+		
+	// Movement
+	//----------------------------------------------------------------
+	"MovementCapabilities"		"DOTA_UNIT_CAP_MOVE_NONE"
+	"MovementSpeed"				"0"
+	
+	// Status
+	//----------------------------------------------------------------
+	"StatusHealth"				"2000"
+	"StatusHealthRegen"		"0"
+	"StatusMana"					"100"
+	"StatusManaRegen"			"0"
+	
+	// Vision
+	//----------------------------------------------------------------
+	"VisionDaytimeRange"		"900"
+	"VisionNighttimeRange"		"600"
+	
+	// Team
+	//----------------------------------------------------------------
+	"TeamName"								"DOTA_TEAM_NEUTRALS"
+	"CombatClassAttack"				"DOTA_COMBAT_CLASS_ATTACK_BASIC"
+	"CombatClassDefend"				"DOTA_COMBAT_CLASS_DEFEND_STRUCTURE"
+	"UnitRelationShipClass"		"DOTA_NPC_UNIT_RELATIONSHIP_TYPE_BUILDING"
+	
+}

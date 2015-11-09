@@ -1,0 +1,67 @@
+.RallyRoot
+{
+	vertical-align: bottom;
+	horizontal-align: right;
+	margin-right: 400px;
+	margin-bottom: 180px;
+}
+
+#RallyPanel
+{
+	width: 60px;
+	height: 60px;
+	border: 4px solid #CC0000;
+}
+
+
+#RallyPanel:hover
+{
+	border: 4px solid #00E600;
+}
+
+
+#RallyImage
+{
+	width: 100%;
+	height: 100%;
+}
+
+.RallyMenu
+{
+	flow-children: down;
+}
+
+.RallyMenuButton
+{
+	visibility: collapse;
+	width: 150px;
+	height: 40px;
+	border: 1px solid black;
+	padding: 0px;
+	padding-left: 8px;
+	background-color: #0D0D0D;
+}
+
+.RallyMenuButton:hover
+{
+	background-color: #443837;
+}
+
+.RallyMenuButton Label
+{
+	font-size: 16px;
+	vertical-align: center;
+	color: #acaaaa;
+	
+}
+
+.RallyMenuButton:hover Label
+{
+	color: #eae9e9;
+}
+
+
+.bRallyPointActive #RemoveRally
+{
+	visibility: visible;
+}

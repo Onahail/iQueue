@@ -1,0 +1,13 @@
+<root>
+	<styles>
+		<include src="file://{resources}/styles/custom_game/rally_point_button.css" />
+	</styles>
+	<scripts>
+		<include src="file://{resources}/scripts/iqueue/rally_point_context_menu.js" />
+	</scripts>
+	<Panel class="RallyMenu">
+		<Button class="RallyMenuButton" id="RemoveRally" onmouseactivate="RemoveRallyPoint()">
+			<Label text="Remove Rally Point" />
+		</Button>
+	</Panel>
+</root>

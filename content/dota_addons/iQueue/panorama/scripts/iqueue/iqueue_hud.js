@@ -43,13 +43,10 @@ function CreateQueuePanels()
 function UpdateQueue()
 {
 	var queryBuilding = Players.GetLocalPlayerPortraitUnit();
-	var unitLabel = Entities.GetUnitLabel( queryBuilding );
 	var timerPanel = m_QueuePanels[0];
 	var queueParent = $("#queue_row");
 	
-	//$.Msg("UpdateQueue value of unitLabel: ", unitLabel);
-	
-	if (unitLabel == "CanQueue")
+	if (FindUnitLabel(queryBuilding, "CanQueue"))
 	{
 		queueParent.SetHasClass( "_hidden", false);
 		for (i = 0; i < BUILDING_QUEUE_MAX; ++i)
@@ -115,6 +112,16 @@ function ChangeTimerState( event )
 {
 	var index = event.entindex;
 	BuildingQueueTable[index].timerState = "No Timer";
+}
+
+function FindUnitLabel( index, queryLabel )
+{ 
+	 	var unitLabel = Entities.GetUnitLabel( index );
+		var re = RegExp(queryLabel);
+		if (unitLabel.match(re)){
+			return true;
+		}else{
+			return false;}
 }
 
 

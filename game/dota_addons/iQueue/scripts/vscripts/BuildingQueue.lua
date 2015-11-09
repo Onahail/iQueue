@@ -8,10 +8,129 @@ if BuildingQueue == nil then
 	_G.BuildingQueue = class({})
 end
 
+if RallyPoints == nil then
+	print ('[RALLYPONTS] creating RallyPoints')
+	_G.RallyPoints = class({})
+end
+
+
+function RallyPoints:PlayerSelectionChanged( event )
+
+	local player = EntIndexToHScript(event.playerID)
+	local selectedEntities = event.selectedEntities
+	local structuresNotSelected = deepCopy(player['structures'])
+	local selectedHandleTable = {}
+	
+	for indexAsString, selectedEntity in pairs(selectedEntities) do
+		if FindUnitLabel(EntIndexToHScript(selectedEntity), "CanQueue") then
+			local building = EntIndexToHScript(selectedEntity)
+			table.insert(selectedHandleTable, building)
+			for k, v in pairs(structuresNotSelected) do
+				if v == building then
+					table.remove(structuresNotSelected, k)
+				end
+			end
+		end
+	end
+	
+	print("Selected entity table")
+	for a,b in pairs(selectedHandleTable) do
+		print(a, b)
+	end
+	
+	print("Structure table of player")
+	if player['structures'] ~= nil then
+		for c,d in pairs(player['structures']) do
+			print(c,d)
+		end
+	end
+	
+	print("Structures not selected")
+	if structuresNotSelected ~= nil then
+		for e, f in pairs(structuresNotSelected) do
+				print (e, f)
+		end
+	end
+	
+end
+
+
+
+
+function RallyPoints:PlayerSetRallyPoint( event )
+
+	local building = EntIndexToHScript(event.entIndex)
+	local rallyPoint = event.targetPoint
+
+	--print("Index of building in PlayerSetRallyPoint:", building:entindex())
+	
+	building:SetRallyPoint(rallyPoint)
+		
+end
+
+function RallyPoints:AttachRallyPointControl( building )
+
+	-- Initial location of rally point is on the building itself
+	local owner = building:GetOwner()
+	building['RallyPoint'] = {}
+	building['RallyPoint'].rallySet = false
+	building['RallyPoint'].selectedByPlayer = false
+	--local flagParticle = "particles/iqueue_particles/rally_flag.vpcf"
+	--local lineParticle = "particles/test_unit_test/rally_line.vpcf"
+	
+	function building:SetRallyPoint(location) -- Coordinates passed from PlayerSetRallyPoint
+		local x,y,z = nil
+		
+		for k,v in pairs(location) do
+			if z == nil then 
+				z = v
+			elseif y == nil then
+				y = v
+			else
+				x = v
+			end
+		end
+		
+		building['RallyPoint'].x = x
+		building['RallyPoint'].y = y
+		building['RallyPoint'].z = z
+		building['RallyPoint'].rallySet = true 
+		
+		
+		
+		
+	end
+	
+	function building:MoveToRallyPoint(unit)
+		print("Moving to rally point")
+		local x = unit:GetAbsOrigin().x
+		local y = unit:GetAbsOrigin().y
+		unit:MoveToPosition(Vector(building['RallyPoint'].x, building['RallyPoint'].y, building['RallyPoint'].z))
+		building:SetThink(function()
+			if (unit:GetAbsOrigin().x == x) and (unit:GetAbsOrigin().y == y)  then
+				print("Resending command")
+				unit:MoveToPosition(Vector(building['RallyPoint'].x, building['RallyPoint'].y, building['RallyPoint'].z))
+				return BUILDING_THINK
+			else
+				print("THEY FINALLY FUCKING MOVED")
+				return nil
+			end
+		end)
+	end
+	
+
+end
+
+
 
 function BuildingQueue:InitializeBuildingEntity( building )
 
 	local owner = building:GetOwner()
+	
+	if FindUnitLabel(building, "CanRally") then
+		RallyPoints:AttachRallyPointControl( building )
+	end
+		
 	
 	building.queueCancelled = false
 	building.IsBuilding = true;
@@ -76,7 +195,7 @@ function BuildingQueue:InitializeBuildingEntity( building )
 				return BUILDING_THINK
 			elseif building.queueCancelled ~= true then
 				if queueType == "Unit" then
-					SpawnUnit(building['Queue'][1].whatToQueue, building:GetAbsOrigin(), owner )
+					SpawnUnit(building['Queue'][1].whatToQueue, building, owner )
 				elseif queueType == "Research" then
 					UnlockResearch()
 				elseif queueType =="Upgrade" then
@@ -140,9 +259,4 @@ function BuildingQueue:InitializeBuildingEntity( building )
 			building:RemoveAbility(abilityName)
 		end
 	end
-	
-	
-
-
-
 end

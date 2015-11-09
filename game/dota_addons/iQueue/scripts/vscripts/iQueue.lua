@@ -17,14 +17,13 @@ function CreateBuilding( event )
 		local buildingName = event.Building
 		
 		local building = CreateUnitByName(buildingName, target, true, player, player, team)
-		local unitLabel = building:GetUnitLabel()
 		building:SetControllableByPlayer(playerID, true)
 		building:SetOwner(player)
 		building:SetModelScale(0.5)
 		
 		--print("Player is: ", player)
 		--print("Building is: ", building)
-		if unitLabel == "CanQueue" then
+		if FindUnitLabel(building, "CanQueue") then
 			BuildingQueue:InitializeBuildingEntity( building )
 		end
 
@@ -60,6 +59,8 @@ function iQueue:Init()
 	CustomGameEventManager:RegisterListener( "queue_research_or_upgrade", Dynamic_Wrap(iQueue, "QueueResearchOrUpgrade"))
 	CustomGameEventManager:RegisterListener( "remove_from_queue", Dynamic_Wrap(iQueue, "RemoveFromQueue"))
 	CustomGameEventManager:RegisterListener( "destroy_queue_timer", Dynamic_Wrap(iQueue, "DestroyQueueTimer"))
+	CustomGameEventManager:RegisterListener( "player_set_rally_point", Dynamic_Wrap(RallyPoints, "PlayerSetRallyPoint"))
+	--CustomGameEventManager:RegisterListener( "player_selection_changed", Dynamic_Wrap(RallyPoints, "PlayerSelectionChanged"))
 
 end
 
@@ -254,10 +255,11 @@ function ApplyUpgrade( upgrade, unit, modifier, rank )
 end
 
 
-function SpawnUnit( unit, location, player )
+function SpawnUnit( unit, building, player )
 
 	local playerID = player:GetPlayerID()
 	local team = player:GetTeam()
+	local location = building:GetAbsOrigin()
 	
 	local unitSpawned =	CreateUnitByName(unit, location, true, player, player, team)
 	unitSpawned:SetControllableByPlayer(playerID, true)
@@ -272,6 +274,12 @@ function SpawnUnit( unit, location, player )
 			local modifier = "modifier_"..upgradeOwned
 			ApplyUpgrade(upgradeOwned, unitSpawned, modifier, player['upgrades'][upgradeOwned].rank)
 		end
+	end
+	
+	
+	if building['RallyPoint'].rallySet ~= false then
+
+		building:MoveToRallyPoint(unitSpawned)
 	end
 end
 
@@ -335,5 +343,19 @@ function GiveUnitDataDrivenModifier(source, target, modifier, dur)
     UPGRADE_MODIFIER_ITEM:ApplyDataDrivenModifier( source, target, modifier, {duration=dur} )
 end
 
+function FindUnitLabel(entity, queryLabel)
+	local unitLabel = entity:GetUnitLabel()
+	if string.match(unitLabel, queryLabel) then
+		return true
+	else
+		--print("Unit does not contain", queryLabel)
+		return false
+	end
+end
 
+function table_invert(t)
+  local u = { }
+  for k, v in pairs(t) do u[v] = k end
+  return u
+end
 

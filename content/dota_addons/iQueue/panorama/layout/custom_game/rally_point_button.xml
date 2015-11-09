@@ -1,0 +1,17 @@
+<root>
+	<styles>
+    <include src="file://{resources}/styles/custom_game/rally_point_button.css" />
+	</styles>
+	<scripts>
+		<include src="file://{resources}/scripts/iqueue/rally_point.js" /> 
+	</scripts>
+	<Panel class="RallyRoot" hittest="true">
+		<Button id="RallyButton"
+			onactivate="SetRallyPoint()"
+			oncontextmenu="RightClickRallyButton()">
+			<Panel id="RallyPanel">
+				<Image id="RallyImage" src="file://{images}/custom_game/rally_flag.png" />
+			</Panel>
+		</Button>
+	</Panel>
+</root>

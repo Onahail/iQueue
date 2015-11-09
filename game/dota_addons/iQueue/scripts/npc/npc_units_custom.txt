@@ -11,7 +11,7 @@
 		"HealthBarOffset"			"140"
 		"HasInventory"				"0"
 		"ConsideredHero"			"1"
-		"UnitLabel"						"CanQueue"
+		"UnitLabel"						"CanQueue CanRally"
 		
 		// Abilities
 		//----------------------------------------------------------------
@@ -46,7 +46,7 @@
 			
 		// Movement
 		//----------------------------------------------------------------
-		"MovementCapabilities"		"DOTA_UNIT_CAP_MOVE_GROUND"
+		"MovementCapabilities"		"DOTA_UNIT_CAP_MOVE_NONE"
 		"MovementSpeed"				"0"
 		
 		// Status
@@ -115,7 +115,7 @@
 			
 		// Movement
 		//----------------------------------------------------------------
-		"MovementCapabilities"		"DOTA_UNIT_CAP_MOVE_GROUND"
+		"MovementCapabilities"		"DOTA_UNIT_CAP_MOVE_NONE"
 		"MovementSpeed"				"0"
 		
 		// Status

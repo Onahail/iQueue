@@ -104,5 +104,4 @@ Harvesting
 - Resource return point tracking. Buildings labeled as "ResReturn" will be utilized for depositing resources.
   * Will return to the nearest resource return structure in terms of pathing distance
 
-#Installation
-## Installation
+##Installation

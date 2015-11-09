@@ -8,7 +8,6 @@
 - Custom border color depending on queue type (research, upgrade, unit)
   * Can be disabled
   * Colors can be changed
-- On hover tooltip of ability
 - Queue stopping when resources run out
 - Implement second queue style for units
 - Rally point interaction with trees
@@ -37,6 +36,7 @@ In addition to the core features of iQueue you'll also find these modular additi
 - Countdown timer on the first slot to indicate build time remaining
 - Cancel anything in the queue at any time by clicking on its respective slot
 - Image on queue will indicate what is being built
+- Hovering over the queue slot when something is being built displays a cancel symbol
 
 ##### Unit Creation
 - Building units on multiple buildings simulatenously as long as resources allow

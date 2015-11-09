@@ -16,17 +16,17 @@
 - Implement resource control
 - Implement harvesting system
 
-## Contents
+## Content
 
 #### Core iQueue Features
-The following functions will be handled by iQueue baseline. Descriptions can be found below
+The following functions will be handled by iQueue baseline.
 - Queue System
 - Ability Research
 - Unit/Building Upgrades
 - Unit Creation
 
 #### Modular additions
-In addition to the core features of iQueue you'll also find these modular additions to the system which can be fully disabled in the iQueue settings. Descriptions can be found below
+In addition to the core features of iQueue you'll also find these modular additions to the system which can be fully disabled in the iQueue settings.
 - Population
 - Resource Control
 - Harvesting

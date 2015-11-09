@@ -33,7 +33,7 @@ In addition to the core features of iQueue you'll also find these modular additi
 
 
 ## Content Descriptions
-Lua based Queue system with interactive Panorama UI
+##### Lua based Queue system with interactive Panorama UI
 - Countdown timer on the first slot to indicate build time remaining
 - Cancel anything in the queue at any time by clicking on its respective slot
 - Image on queue will indicate what is being built

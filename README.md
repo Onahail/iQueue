@@ -17,16 +17,18 @@ To-Do List:
 - Implement resource control
 - Implement harvesting system
 
-iQueue handles the following 
+iQueue comes standard with the following 
 - Queue System
 - Ability Research
 - Unit/Building Upgrades
 - Unit Creation
+
+iQueue comes with these modular addons depending on need. These can be disabled in settings so copying the lua files is not a requirement
 - Population
 - Resource Control
 - Harvesting
 
-Population, Resource Control, and Harvesting can be disabled in settings so copying those files is not necessary.
+
 
 Lua based Queue system with interactive Panorama UI
 - Countdown timer on the first slot to indicate build time remaining

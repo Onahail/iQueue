@@ -2,9 +2,9 @@
 
 **This is not yet finished, not all functionalities implemented**
 
-**For installation instructions, please go here** (Add link to intall instructions upon release)
+**[Installation Instructions](#Installation)** (Add link to intall instructions upon release)
 
-To-Do List:
+## To-Do List:
 - Custom border color depending on queue type (research, upgrade, unit)
   * Can be disabled
   * Colors can be changed
@@ -17,19 +17,22 @@ To-Do List:
 - Implement resource control
 - Implement harvesting system
 
-iQueue comes standard with the following 
+## Contents
+
+#### Core iQueue Features
 - Queue System
 - Ability Research
 - Unit/Building Upgrades
 - Unit Creation
 
-iQueue comes with these modular addons depending on need. These can be disabled in settings so copying the lua files is not a requirement
+#### Modular additions
+In addition to the core features of iQueue you'll also find these modular additions to the system which can be fully disabled in the iQueue settings.
 - Population
 - Resource Control
 - Harvesting
 
 
-
+## Content Descriptions
 Lua based Queue system with interactive Panorama UI
 - Countdown timer on the first slot to indicate build time remaining
 - Cancel anything in the queue at any time by clicking on its respective slot
@@ -100,3 +103,6 @@ Harvesting
   * No need to add those abilities to each unit
 - Resource return point tracking. Buildings labeled as "ResReturn" will be utilized for depositing resources.
   * Will return to the nearest resource return structure in terms of pathing distance
+
+#Installation
+## Installation

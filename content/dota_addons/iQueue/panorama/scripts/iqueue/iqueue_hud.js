@@ -46,7 +46,7 @@ function UpdateQueue()
 	var timerPanel = m_QueuePanels[0];
 	var queueParent = $("#queue_row");
 	
-	if (FindUnitLabel(queryBuilding, "CanQueue"))
+	if (FindUnitLabel(queryBuilding, "CanQueue") && Entities.IsControllableByPlayer( queryBuilding, Game.GetLocalPlayerID()))
 	{
 		queueParent.SetHasClass( "_hidden", false);
 		for (i = 0; i < BUILDING_QUEUE_MAX; ++i)
@@ -123,6 +123,9 @@ function FindUnitLabel( index, queryLabel )
 		}else{
 			return false;}
 }
+
+
+
 
 
 

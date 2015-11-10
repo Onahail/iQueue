@@ -7,7 +7,7 @@
 	</scripts>
 	<Panel class="RallyRoot" hittest="true">
 		<Button id="RallyButton"
-			onactivate="SetRallyPoint()"
+			onactivate="LeftClickRallyButton()"
 			oncontextmenu="RightClickRallyButton()">
 			<Panel id="RallyPanel">
 				<Image id="RallyImage" src="file://{images}/custom_game/rally_flag.png" />

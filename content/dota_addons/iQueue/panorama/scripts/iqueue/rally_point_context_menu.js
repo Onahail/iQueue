@@ -5,9 +5,11 @@ function DismissMenu()
 	$.DispatchEvent( "DismissAllContextMenus" )
 }
 
-function RemoveRallyPoint( event )
+function ContextMenuRemoveRally( event )
 {
 	
+	var parentPanel = $.GetContextPanel().data().ParentPanel;
+	parentPanel.data().RemoveRallyPoint();
 	DismissMenu();
 	
 }

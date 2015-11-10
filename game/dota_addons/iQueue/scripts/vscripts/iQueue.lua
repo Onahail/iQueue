@@ -1,7 +1,7 @@
 --[[
 There are iQueue specific functions within OnEntityKilled and OnHeroInGame
 ]]
-require('BuildingQueue')
+require('iQueue_BuildingQueue')
 
 UPGRADE_MODIFIER_ITEM = CreateItem( "item_upgrade_modifiers", source, source)
 
@@ -47,22 +47,21 @@ function iQueue:Init()
 	GameRules.ItemKV = LoadKeyValues("scripts/npc/npc_items_custom.txt")
 	GameRules.Upgrades = LoadKeyValues("scripts/kv/upgrades.kv")
 	
-	GameRules.SELECTED_BUILDINGS = {}
-	
 	--Register game listeners
 	ListenToGameEvent('entity_killed', Dynamic_Wrap(iQueue, 'EntityKilled'), self)
 	ListenToGameEvent('npc_spawned', Dynamic_Wrap(iQueue, 'NPCSpawned'), self)
-	ListenToGameEvent('player_connect_full', Dynamic_Wrap(iQueue, 'PlayerFullyConnected'), self)
 	
 	--Register Custom Listeners
 	CustomGameEventManager:RegisterListener( "mass_queue_units", Dynamic_Wrap(iQueue, "MassQueueUnits"))
 	CustomGameEventManager:RegisterListener( "queue_research_or_upgrade", Dynamic_Wrap(iQueue, "QueueResearchOrUpgrade"))
 	CustomGameEventManager:RegisterListener( "remove_from_queue", Dynamic_Wrap(iQueue, "RemoveFromQueue"))
 	CustomGameEventManager:RegisterListener( "destroy_queue_timer", Dynamic_Wrap(iQueue, "DestroyQueueTimer"))
-	CustomGameEventManager:RegisterListener( "player_set_rally_point", Dynamic_Wrap(RallyPoints, "PlayerSetRallyPoint"))
-	--CustomGameEventManager:RegisterListener( "player_selection_changed", Dynamic_Wrap(RallyPoints, "PlayerSelectionChanged"))
+	CustomGameEventManager:RegisterListener( "player_set_rally_point_ground", Dynamic_Wrap(RallyPoints, "PlayerSetRallyPointGround"))
+	CustomGameEventManager:RegisterListener( "player_set_rally_point_entity", Dynamic_Wrap(RallyPoints, "PlayerSetRallyPointEntity"))
+	CustomGameEventManager:RegisterListener( "player_removed_rally_point", Dynamic_Wrap(RallyPoints, "PlayerRemovedRallyPoint")) 
 
 end
+
 
 function iQueue:NPCSpawned( keys )
 
@@ -79,28 +78,14 @@ function iQueue:HeroInGame( hero )
 	hero.IsBuilding = false;
 	
 	local player = hero:GetOwner()
-	
-	table.insert(player['units'], hero)
-end
-
-function iQueue:PlayerFullyConnected( keys )
-	
-	print("Player fully loaded. Initializing iQueue tables.")
-	
-  local entIndex = keys.index+1
-	print(entIndex+1)
-  local player = EntIndexToHScript(entIndex)
-  local playerID = player:GetPlayerID()
-	
+	local playerID = player:entindex()
 	print("Creating player tables for PlayerID: ", playerID)
-	
 	player['upgrades'] = player['upgrades'] or {} -- Tracks all upgrades a player has completed
 	player['units'] = player['units'] or {} -- Tracks all units a player owns for applying upgrades
 	player['structures'] = player['structures'] or {} -- Tracks all structures a player owns for applying upgrades
 	player['research'] = player['research'] or {} -- Tracks all completed research to remove it from future buildings
 	player['QueueTrack'] = player['QueueTrack'] or {} -- Contains flags to handle hiding/showing abilities on buildings
-	
-
+	table.insert(player['units'], hero)
 end
 
 
@@ -277,8 +262,7 @@ function SpawnUnit( unit, building, player )
 	end
 	
 	
-	if building['RallyPoint'].rallySet ~= false then
-
+	if building['RallyPoint'].rallySet == true then
 		building:MoveToRallyPoint(unitSpawned)
 	end
 end

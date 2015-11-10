@@ -131,6 +131,14 @@ function PushTimerToTable( timer )
 }
 
 
+function CheckControl()
+{
+	var mainSelected = Players.GetLocalPlayerPortraitUnit();
+	//$.Msg("Player can control: ", Entities.IsControllableByPlayer( mainSelected, Game.GetLocalPlayerID()))
+	
+	
+}
+
 
 
 
@@ -141,6 +149,12 @@ function PushTimerToTable( timer )
 		GameEvents.Subscribe( "mass_queue", MassQueue );
 		GameEvents.Subscribe( "research_or_upgrade_queue", ResearchOrUpgradeQueue );
 		GameEvents.Subscribe( "show_timer", PushTimerToTable );
+		
+		
+		GameEvents.Subscribe( "dota_player_update_selected_unit", CheckControl );
+		GameEvents.Subscribe( "dota_player_update_query_unit", CheckControl );
+		
+		
 })();
 
 

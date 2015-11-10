@@ -6,7 +6,7 @@
 		<include src="file://{resources}/scripts/iqueue/rally_point_context_menu.js" />
 	</scripts>
 	<Panel class="RallyMenu">
-		<Button class="RallyMenuButton" id="RemoveRally" onmouseactivate="RemoveRallyPoint()">
+		<Button class="RallyMenuButton" id="RemoveRally" onmouseactivate="ContextMenuRemoveRally()">
 			<Label text="Remove Rally Point" />
 		</Button>
 	</Panel>

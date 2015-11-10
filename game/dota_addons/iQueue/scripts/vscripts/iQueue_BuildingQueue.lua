@@ -13,59 +13,22 @@ if RallyPoints == nil then
 	_G.RallyPoints = class({})
 end
 
-
-function RallyPoints:PlayerSelectionChanged( event )
-
-	local player = EntIndexToHScript(event.playerID)
-	local selectedEntities = event.selectedEntities
-	local structuresNotSelected = deepCopy(player['structures'])
-	local selectedHandleTable = {}
-	
-	for indexAsString, selectedEntity in pairs(selectedEntities) do
-		if FindUnitLabel(EntIndexToHScript(selectedEntity), "CanQueue") then
-			local building = EntIndexToHScript(selectedEntity)
-			table.insert(selectedHandleTable, building)
-			for k, v in pairs(structuresNotSelected) do
-				if v == building then
-					table.remove(structuresNotSelected, k)
-				end
-			end
-		end
-	end
-	
-	print("Selected entity table")
-	for a,b in pairs(selectedHandleTable) do
-		print(a, b)
-	end
-	
-	print("Structure table of player")
-	if player['structures'] ~= nil then
-		for c,d in pairs(player['structures']) do
-			print(c,d)
-		end
-	end
-	
-	print("Structures not selected")
-	if structuresNotSelected ~= nil then
-		for e, f in pairs(structuresNotSelected) do
-				print (e, f)
-		end
-	end
-	
-end
-
-
-
-
-function RallyPoints:PlayerSetRallyPoint( event )
-
+function RallyPoints:PlayerSetRallyPointGround( event )
 	local building = EntIndexToHScript(event.entIndex)
 	local rallyPoint = event.targetPoint
+	building:SetRallyPointGround(rallyPoint)
+end
 
-	--print("Index of building in PlayerSetRallyPoint:", building:entindex())
-	
-	building:SetRallyPoint(rallyPoint)
-		
+function RallyPoints:PlayerSetRallyPointEntity( event )
+	local building = EntIndexToHScript(event.entIndex)
+	local targetEntity = EntIndexToHScript(event.targetEntity)
+	building:SetRallyPointEntity(targetEntity)
+	--print("Target is:", targetEntity:GetUnitName())
+end
+
+function RallyPoints:PlayerRemovedRallyPoint( event )
+	local building = EntIndexToHScript(event.entIndex)
+	building:RemoveRallyPoint()
 end
 
 function RallyPoints:AttachRallyPointControl( building )
@@ -74,49 +37,60 @@ function RallyPoints:AttachRallyPointControl( building )
 	local owner = building:GetOwner()
 	building['RallyPoint'] = {}
 	building['RallyPoint'].rallySet = false
-	building['RallyPoint'].selectedByPlayer = false
-	--local flagParticle = "particles/iqueue_particles/rally_flag.vpcf"
-	--local lineParticle = "particles/test_unit_test/rally_line.vpcf"
+	building['RallyPoint'].TargetRally = false
+	building['RallyPoint'].GroundRally = false
 	
-	function building:SetRallyPoint(location) -- Coordinates passed from PlayerSetRallyPoint
-		local x,y,z = nil
+	function building:SetRallyPointGround(location) -- Coordinates passed from PlayerSetRallyPoint		
+	
+		building['RallyPoint'].GroundRally = true
+		building['RallyPoint'].TargetRally = false
 		
-		for k,v in pairs(location) do
-			if z == nil then 
-				z = v
-			elseif y == nil then
-				y = v
-			else
-				x = v
-			end
-		end
-		
-		building['RallyPoint'].x = x
-		building['RallyPoint'].y = y
-		building['RallyPoint'].z = z
+		building['RallyPoint'].position = Vector(location["0"], location["1"], location["2"])
+		--print("Vector:", building['RallyPoint'].position)
 		building['RallyPoint'].rallySet = true 
-		
-		
-		
-		
 	end
+	
+	function building:SetRallyPointEntity(unitHandle)
+		
+		building['RallyPoint'].TargetRally = true
+		building['RallyPoint'].GroundRally = false
+		
+		building['RallyPoint'].targetEntity = unitHandle
+		building['RallyPoint'].rallySet = true
+	end
+	
+	function building:RemoveRallyPoint()
+		building['RallyPoint'].TargetRally = false
+		building['RallyPoint'].GroundRally = false
+		building['RallyPoint'].position = building:GetAbsOrigin()
+	end
+	
 	
 	function building:MoveToRallyPoint(unit)
-		print("Moving to rally point")
-		local x = unit:GetAbsOrigin().x
-		local y = unit:GetAbsOrigin().y
-		unit:MoveToPosition(Vector(building['RallyPoint'].x, building['RallyPoint'].y, building['RallyPoint'].z))
-		building:SetThink(function()
-			if (unit:GetAbsOrigin().x == x) and (unit:GetAbsOrigin().y == y)  then
-				print("Resending command")
-				unit:MoveToPosition(Vector(building['RallyPoint'].x, building['RallyPoint'].y, building['RallyPoint'].z))
-				return BUILDING_THINK
-			else
-				print("THEY FINALLY FUCKING MOVED")
-				return nil
-			end
-		end)
+		
+		if building['RallyPoint'].GroundRally == true then
+			local order = {UnitIndex = unit:entindex(), OrderType = DOTA_UNIT_ORDER_MOVE_TO_POSITION, Position = building['RallyPoint'].position,	 Queue = true}
+			ExecuteOrderFromTable(order)
+		elseif building['RallyPoint'].TargetRally == true then
+			print("Moving to ", building['RallyPoint'].targetEntity:GetUnitName(), building['RallyPoint'].targetEntity:entindex())
+			local order = {UnitIndex = unit:entindex(), OrderType = DOTA_UNIT_ORDER_MOVE_TO_TARGET, TargetIndex = building['RallyPoint'].targetEntity:entindex(),	Queue = true}
+			ExecuteOrderFromTable(order)
+		end
+		
+		
+		
 	end
+	
+	function building:MoveToRallyPointEntity(unit)
+		
+		local order = {UnitIndex = unit:entindex(),
+									 OrderType = DOTA_UNIT_ORDER_MOVE_TO_POSITION,
+									 Position = building['RallyPoint'].position,
+									 Queue = true}
+		
+		ExecuteOrderFromTable(order)
+		
+	end	
 	
 
 end
@@ -191,37 +165,41 @@ function BuildingQueue:InitializeBuildingEntity( building )
 	
 		building:SetThink(function()
 			local v = endTime - GameRules:GetGameTime()
-			if v > 0 and building.queueCancelled ~= true then
-				return BUILDING_THINK
-			elseif building.queueCancelled ~= true then
-				if queueType == "Unit" then
-					SpawnUnit(building['Queue'][1].whatToQueue, building, owner )
-				elseif queueType == "Research" then
-					UnlockResearch()
-				elseif queueType =="Upgrade" then
-					local upgradeName = building['Queue'][1].whatToQueue
-					UpdatePlayerUpgrades( owner, building['Queue'][1].whatToQueue, abilityName )
-				else	
-					print("QueueType not specified... Breaking")
-					return;
-				end
-				local x = table.remove(building['Queue'], 1)
-				CustomGameEventManager:Send_ServerToPlayer( owner, "remove_from_queue", { entindex = building:entindex() })
-				if #building['Queue'] > 0 then
-					building:StartQueue( building['Queue'][1].queueTime, building['Queue'][1].queueType, building['Queue'][1].abilityName )
+			if building:IsAlive() then
+				if v > 0 and building.queueCancelled ~= true and IsValidEntity(building) then
 					return BUILDING_THINK
+				elseif building.queueCancelled ~= true then
+					if queueType == "Unit" then
+						SpawnUnit(building['Queue'][1].whatToQueue, building, owner )
+					elseif queueType == "Research" then
+						UnlockResearch()
+					elseif queueType =="Upgrade" then
+						local upgradeName = building['Queue'][1].whatToQueue
+						UpdatePlayerUpgrades( owner, building['Queue'][1].whatToQueue, abilityName )
+					else	
+						print("QueueType not specified... Breaking")
+						return;
+					end
+					local x = table.remove(building['Queue'], 1)
+					CustomGameEventManager:Send_ServerToPlayer( owner, "remove_from_queue", { entindex = building:entindex() })
+					if #building['Queue'] > 0 then
+						building:StartQueue( building['Queue'][1].queueTime, building['Queue'][1].queueType, building['Queue'][1].abilityName )
+						return BUILDING_THINK
+					else
+						building.state = "Not Building"
+						return nil
+					end
 				else
-					building.state = "Not Building"
-					return nil
-				end
+					building.queueCancelled = false
+					if #building['Queue'] > 0 then
+						return BUILDING_THINK
+					else
+						return nil
+					end
+				end	
 			else
-				building.queueCancelled = false
-				if #building['Queue'] > 0 then
-					return BUILDING_THINK
-				else
-					return nil
-				end
-			end	
+			 return nil
+			end
 		end)
 	end
 	

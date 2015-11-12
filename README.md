@@ -2,7 +2,7 @@
 
 **This is not yet finished, not all functionalities implemented**
 
-**[Installation Instructions](https://github.com/Onahail/iQueue/blob/master/Installation_Instructions)**
+**[Installation Instructions](https://github.com/Onahail/iQueue/blob/master/Installation_Instructions.md)**
 
 ## To-Do List:
 - Custom border color depending on queue type (research, upgrade, unit)

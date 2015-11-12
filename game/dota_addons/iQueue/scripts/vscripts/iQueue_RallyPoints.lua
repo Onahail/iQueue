@@ -31,9 +31,9 @@ function RallyPoints:AttachRallyPointControl( building )
 	building['RallyPoint'].GroundRally = false
 	
 	function building:SetRallyPointGround(location) -- Coordinates passed from PlayerSetRallyPointGround	
-	
-		building['RallyPoint'].GroundRally = true
+		
 		building['RallyPoint'].TargetRally = false
+		building['RallyPoint'].GroundRally = true
 		
 		building['RallyPoint'].position = Vector(location["0"], location["1"], location["2"])
 		--print("Vector:", building['RallyPoint'].position)
@@ -52,7 +52,8 @@ function RallyPoints:AttachRallyPointControl( building )
 	function building:RemoveRallyPoint()
 		building['RallyPoint'].TargetRally = false
 		building['RallyPoint'].GroundRally = false
-		building['RallyPoint'].position = building:GetAbsOrigin()
+		building['RallyPoint'].position = nil
+		building['RallyPoint'].rallySet = false
 	end
 	
 	

@@ -1,6 +1,6 @@
 "use strict;"
 
-var RallyTable = {};	
+var RallyTable = RallyTable || {};	
 
 
 

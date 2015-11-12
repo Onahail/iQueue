@@ -5,8 +5,8 @@ end
 
 function RallyPoints:PlayerSetRallyPointGround( event )
 	local building = EntIndexToHScript(event.entIndex)
-	local rallyPoint = event.targetPoint
-	building:SetRallyPointGround(rallyPoint)
+	local targetPoint = event.targetPoint
+	building:SetRallyPointGround(targetPoint)
 end
 
 function RallyPoints:PlayerSetRallyPointEntity( event )

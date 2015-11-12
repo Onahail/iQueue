@@ -31,20 +31,15 @@ function RallyPoints:AttachRallyPointControl( building )
 	building['RallyPoint'].GroundRally = false
 	
 	function building:SetRallyPointGround(location) -- Coordinates passed from PlayerSetRallyPointGround	
-		
 		building['RallyPoint'].TargetRally = false
 		building['RallyPoint'].GroundRally = true
-		
 		building['RallyPoint'].position = Vector(location["0"], location["1"], location["2"])
-		--print("Vector:", building['RallyPoint'].position)
 		building['RallyPoint'].rallySet = true 
 	end
 	
 	function building:SetRallyPointEntity(unitHandle)
-		
 		building['RallyPoint'].TargetRally = true
 		building['RallyPoint'].GroundRally = false
-		
 		building['RallyPoint'].targetEntity = unitHandle
 		building['RallyPoint'].rallySet = true
 	end
@@ -58,18 +53,13 @@ function RallyPoints:AttachRallyPointControl( building )
 	
 	
 	function building:MoveToRallyPoint(unit)
-		
+		local order = nil
 		if building['RallyPoint'].GroundRally == true then
-			local order = {UnitIndex = unit:entindex(), OrderType = DOTA_UNIT_ORDER_MOVE_TO_POSITION, Position = building['RallyPoint'].position,	 Queue = true}
-			ExecuteOrderFromTable(order)
+			order = {UnitIndex = unit:entindex(), OrderType = DOTA_UNIT_ORDER_MOVE_TO_POSITION, Position = building['RallyPoint'].position,	 Queue = true}
 		elseif building['RallyPoint'].TargetRally == true then
-			print("Moving to ", building['RallyPoint'].targetEntity:GetUnitName(), building['RallyPoint'].targetEntity:entindex())
-			local order = {UnitIndex = unit:entindex(), OrderType = DOTA_UNIT_ORDER_MOVE_TO_TARGET, TargetIndex = building['RallyPoint'].targetEntity:entindex(),	Queue = true}
-			ExecuteOrderFromTable(order)
+			order = {UnitIndex = unit:entindex(), OrderType = DOTA_UNIT_ORDER_MOVE_TO_TARGET, TargetIndex = building['RallyPoint'].targetEntity:entindex(),	Queue = true}
 		end
-		
-		
-		
+		ExecuteOrderFromTable(order)
 	end
 	
 	function building:MoveToRallyPointEntity(unit)

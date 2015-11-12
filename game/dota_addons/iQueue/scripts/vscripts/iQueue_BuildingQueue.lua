@@ -76,9 +76,9 @@ function BuildingQueue:InitializeBuildingEntity( building )
 		CustomGameEventManager:Send_ServerToPlayer( owner, "show_timer", { queueTime = queueTime, currentGameTime = currentGameTime, index = building:entindex() })
 	
 		building:SetThink(function()
-			local v = endTime - GameRules:GetGameTime()
+			local timeRemaining = endTime - GameRules:GetGameTime()
 			if building:IsAlive() then
-				if v > 0 and building.queueCancelled ~= true and IsValidEntity(building) then
+				if timeRemaining > 0 and building.queueCancelled ~= true and IsValidEntity(building) then
 					return BUILDING_THINK
 				elseif building.queueCancelled ~= true then
 					if queueType == "Unit" then

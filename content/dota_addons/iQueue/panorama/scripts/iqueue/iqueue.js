@@ -2,7 +2,7 @@
 
 //panel.DeleteAsync(0) 
 
-var BuildingQueueTable = {};
+var BuildingQueueTable = BuildingQueueTable || {};
 
 
 function InitializeQueueTable( event ){

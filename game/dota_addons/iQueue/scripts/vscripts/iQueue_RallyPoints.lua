@@ -30,7 +30,7 @@ function RallyPoints:AttachRallyPointControl( building )
 	building['RallyPoint'].TargetRally = false
 	building['RallyPoint'].GroundRally = false
 	
-	function building:SetRallyPointGround(location) -- Coordinates passed from PlayerSetRallyPoint		
+	function building:SetRallyPointGround(location) -- Coordinates passed from PlayerSetRallyPointGround	
 	
 		building['RallyPoint'].GroundRally = true
 		building['RallyPoint'].TargetRally = false

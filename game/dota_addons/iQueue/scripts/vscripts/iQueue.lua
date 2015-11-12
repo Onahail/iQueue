@@ -2,6 +2,7 @@
 There are iQueue specific functions within OnEntityKilled and OnHeroInGame
 ]]
 require('iQueue_BuildingQueue')
+require('iQueue_RallyPoints')
 
 UPGRADE_MODIFIER_ITEM = CreateItem( "item_upgrade_modifiers", source, source)
 

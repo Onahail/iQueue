@@ -52,7 +52,7 @@ function RallyPoints:AttachRallyPointControl( building )
 	function building:RemoveRallyPoint()
 		building['RallyPoint'].TargetRally = false
 		building['RallyPoint'].GroundRally = false
-		building['RallyPoint'].position = nil
+		building['RallyPoint'].position = building:GetAbsOrigin()
 		building['RallyPoint'].rallySet = false
 	end
 	

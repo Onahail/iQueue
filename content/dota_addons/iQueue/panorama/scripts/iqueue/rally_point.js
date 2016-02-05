@@ -32,7 +32,7 @@ function DetermineSelection()
 	var playerID = Players.GetLocalPlayer();
 	var mainSelected = Players.GetLocalPlayerPortraitUnit();
 	var	selectedEntities = Players.GetSelectedEntities( playerID );
-	if (FindUnitLabel(mainSelected, "CanRally"))
+	if (FindUnitLabel(mainSelected, "CanRally") && Entities.IsControllableByPlayer( mainSelected, Game.GetLocalPlayerID()))
 	{
 		$("#RallyButton").SetHasClass( "_hidden", false);
 	}
@@ -41,11 +41,11 @@ function DetermineSelection()
 		$("#RallyButton").SetHasClass( "_hidden", true);	
 	}
 	
-	if (Entities.IsControllableByPlayer( mainSelected, Game.GetLocalPlayerID()))
-	{
+	//if (Entities.IsControllableByPlayer( mainSelected, Game.GetLocalPlayerID()))
+	//{
 		for (var index in RallyTable)
 		{
-			if (ArrayContains(selectedEntities, index))
+			if (ArrayContains(selectedEntities, index) && Entities.IsControllableByPlayer( mainSelected, Game.GetLocalPlayerID()))
 			{
 				ShowRallyPoint(index, playerID)
 			}
@@ -54,7 +54,7 @@ function DetermineSelection()
 				HideRallyPoint(index, playerID)
 			}
 		}
-	}
+	//}
 }
 function SetRallyPoint()
 {
@@ -103,7 +103,7 @@ function RemoveRallyPoint()
 	{
 		if (RallyTable[selectedEntities[i]].rallySet == true)
 		{
-			HideRallyPoint(selectedEntities[i], playerID, false)
+			HideRallyPoint(selectedEntities[i])
 			GameEvents.SendCustomGameEventToServer( "player_removed_rally_point", {entIndex : selectedEntities[i]});
 			RallyTable[selectedEntities[i]].rallySet = false;
 		}
@@ -216,7 +216,7 @@ function RightClickRallyButton()
 	contextMenu.AddClass( "ContextMenu_NoBorder" );
 	contextMenu.GetContentsPanel().SetHasClass( "bRallyPointActive", bRallyPointActive );
 	contextMenu.GetContentsPanel().BLoadLayout( "file://{resources}/layout/custom_game/rally_point_context_menu.xml", false, false );
-	contextMenu.GetContentsPanel().data().ParentPanel = $("#RallyButton");
+	contextMenu.GetContentsPanel().ParentPanel = $("#RallyButton");
 }
 //------------------------------------------------------------------------------------------------------------------------
 
@@ -260,7 +260,7 @@ function ShowRallyPoint(index, playerID, entityTargetRally)
 		}
 	}
 }
-function HideRallyPoint(index, playerID)
+function HideRallyPoint(index)
 {
 	if (RallyTable[index].line != undefined)
 	{
@@ -348,6 +348,6 @@ function FindUnitLabel( index, queryLabel )
 		GameEvents.Subscribe( "dota_player_update_query_unit", DetermineSelection );
 		GameEvents.Subscribe( "npc_spawned", InitializeRallyTable );
 		
-		$("#RallyButton").data().RemoveRallyPoint = RemoveRallyPoint;
+		$("#RallyButton").RemoveRallyPoint = RemoveRallyPoint;
 
 })();

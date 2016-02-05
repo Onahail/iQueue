@@ -8,8 +8,8 @@ function DismissMenu()
 function ContextMenuRemoveRally( event )
 {
 	
-	var parentPanel = $.GetContextPanel().data().ParentPanel;
-	parentPanel.data().RemoveRallyPoint();
+	var parentPanel = $.GetContextPanel().ParentPanel;
+	parentPanel.RemoveRallyPoint();
 	DismissMenu();
 	
 }

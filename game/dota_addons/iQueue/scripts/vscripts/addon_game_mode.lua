@@ -24,8 +24,10 @@ function Precache( context )
 	PrecacheResource("model", "models/props_structures/bad_ancient_destruction.vmdl", context)
 	PrecacheResource("model", "models/creeps/lane_creeps/creep_bad_melee/creep_bad_melee_mega.vmdl", context)
 	PrecacheResource("model", "models/buildings/building_racks_melee_reference.vmdl", context)
+	PrecacheResource("model", "models/creeps/neutral_creeps/n_creep_ogre_med/n_creep_ogre_med.vmdl", context)
+	PrecacheResource("model", "models/props_structures/good_barracks_melee001.vmdl", context)
 	PrecacheResource("particle", "particles/iqueue_particles/rally_flag.vpcf", context)
-	--PrecacheResource("particle", "particles/test_unit_test/rally_line.vpcf", context)
+	PrecacheResource("particle", "particles/ui_mouseactions/clicked_unit_select.vpcf", context)
 	
 	
 	

@@ -1,0 +1,22 @@
+<root>
+	<styles>
+    <include src="file://{resources}/styles/custom_game/harvest_button.css" />
+	</styles>
+	<scripts>
+		<include src="file://{resources}/scripts/iqueue/harvesting.js" /> 
+	</scripts>
+	<Panel class="HarvestRoot" hittest="true">
+		<Button id="HarvestButton"
+			onactivate="TargetTreeToHarvest()">
+			<Panel id="HarvestPanel">
+				<Image id="HarvestImage" src="file://{images}/custom_game/harvest_lumber.png" />
+			</Panel>
+		</Button>
+		<Button id="DepositButton" class="_hidden"
+			onactivate="ReturnLumber()">
+			<Panel id="DepositPanel">
+				<Image id="DepositImage" src="file://{images}/custom_game/deposit_lumber.png" />
+			</Panel>
+		</Button>
+	</Panel>
+</root>

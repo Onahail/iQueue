@@ -5,7 +5,7 @@
     "SoundSet"          "0" 
     "Ability1"        "unit_building" 
     "Ability2"        "upgrade_building" 
-    "Ability3"        "" 
+    "Ability3"        "resource_building" 
     "Ability4"        ""
     "Ability5"        ""
     "Ability6"        ""

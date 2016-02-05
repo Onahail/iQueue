@@ -10,8 +10,8 @@ var timerState = timerState || "No Timer";
 function CreateQueuePanels()
 {
 	var queueParent = $("#queue_row");
-	queueParent.data().CancelQueueInSlot = CancelQueueInSlot;
-	queueParent.data().CheckQueue = CheckQueue;
+	queueParent.CancelQueueInSlot = CancelQueueInSlot;
+	queueParent.CheckQueue = CheckQueue;
 	
 	//queueParent.AddClass("_hidden");
 	
@@ -31,9 +31,9 @@ function CreateQueuePanels()
 		}else{
 			queuePanel.BLoadLayout( "file://{resources}/layout/custom_game/iqueue_panels.xml", false, false );
 		}
-		queuePanel.data().SetQueueSlot( i );
-		queuePanel.data().SlotNumber = i + 1;
-		queuePanel.data().ParentPanel = parentPanel;
+		queuePanel.SetQueueSlot( i );
+		queuePanel.SlotNumber = i + 1;
+		queuePanel.ParentPanel = parentPanel;
 		
 		m_QueuePanels.push(queuePanel);
 	}
@@ -54,14 +54,14 @@ function UpdateQueue()
 			var queuePanel = m_QueuePanels[i];
 			var slot = GetQueuedInSlot(queryBuilding, i);
 			//$.Msg("Value of slot in UpdateQueue: ", slot);
-			queuePanel.data().SetQueue( queryBuilding, slot, i);
+			queuePanel.SetQueue( queryBuilding, slot, i);
 			m_SlotNumber = i;
 		}
-		timerPanel.data().SetTimerState(BuildingQueueTable[queryBuilding].timerState)
+		timerPanel.SetTimerState(BuildingQueueTable[queryBuilding].timerState)
 		if (BuildingQueueTable[queryBuilding][0])
 		{
 			//$.Msg("Calling SetTimer");
-			timerPanel.data().SetTimer(BuildingQueueTable[queryBuilding][0].queueBuildTime, 
+			timerPanel.SetTimer(BuildingQueueTable[queryBuilding][0].queueBuildTime, 
 							 BuildingQueueTable[queryBuilding][0].queueStart,
 							 BuildingQueueTable[queryBuilding][0].queueEndTime);
 		}

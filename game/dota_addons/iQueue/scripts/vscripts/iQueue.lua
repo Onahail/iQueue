@@ -1,8 +1,25 @@
---[[
-There are iQueue specific functions within OnEntityKilled and OnHeroInGame
-]]
+-- Settings
+
+MAX_POPULATION = 100
+BASE_POPULATION = 0
+USE_POPULATION = true
+
+
+
+
+
+------------
+
+
+
+
 require('iQueue_BuildingQueue')
 require('iQueue_RallyPoints')
+require('iQueue_Harvesting')
+
+if USE_POPULATION == true then
+	require('iQueue_Population')
+end
 
 UPGRADE_MODIFIER_ITEM = CreateItem( "item_upgrade_modifiers", source, source)
 
@@ -27,6 +44,11 @@ function CreateBuilding( event )
 		if FindUnitLabel(building, "CanQueue") then
 			BuildingQueue:InitializeBuildingEntity( building )
 		end
+		
+		if FindUnitLabel(building, "PopSource") then
+			--print(GameRules.UnitKV[building:GetUnitName()]["PopValue"])
+			player:IncreasePopulation( GameRules.UnitKV[building:GetUnitName()]["PopValue"] )
+		end
 
 
 		--print('Building created')
@@ -41,6 +63,8 @@ end
 function iQueue:Init()
 
 	print("Initiating iQueue")
+	
+	GameRules:SetSameHeroSelectionEnabled( true )
 
 	GameRules.AbilityKV = LoadKeyValues("scripts/npc/npc_abilities_custom.txt")
 	GameRules.UnitKV = LoadKeyValues("scripts/npc/npc_units_custom.txt")
@@ -60,6 +84,7 @@ function iQueue:Init()
 	CustomGameEventManager:RegisterListener( "player_set_rally_point_ground", Dynamic_Wrap(RallyPoints, "PlayerSetRallyPointGround"))
 	CustomGameEventManager:RegisterListener( "player_set_rally_point_entity", Dynamic_Wrap(RallyPoints, "PlayerSetRallyPointEntity"))
 	CustomGameEventManager:RegisterListener( "player_removed_rally_point", Dynamic_Wrap(RallyPoints, "PlayerRemovedRallyPoint")) 
+	CustomGameEventManager:RegisterListener( "find_tree_under_mouse", Dynamic_Wrap(Harvesting, "FindTreeUnderMouse")) 
 
 end
 
@@ -78,7 +103,14 @@ function iQueue:HeroInGame( hero )
 
 	hero.IsBuilding = false;
 	
+	hero:AddExperience(500, false, false)
+	
 	local player = hero:GetOwner()
+	
+	if USE_POPULATION == true then
+		Population:InitializePopulationForPlayer( player )
+	end
+	
 	local playerID = player:entindex()
 	print("Creating player tables for PlayerID: ", playerID)
 	player['upgrades'] = player['upgrades'] or {} -- Tracks all upgrades a player has completed
@@ -129,6 +161,7 @@ function iQueue:MassQueueUnits( event )
 	local queueTime = event.QueueTime
 	local queueType = event.QueueType
 	local whatToQueue = event.WhatToQueue
+	
 	if building:FindAbilityByName(event.AbilityName) ~= nil then
 		if #building['Queue'] + 1 < MAX_BUILDING_QUEUE then
 			building['RUSlot'][#building['Queue']+1] = true;
@@ -137,6 +170,7 @@ function iQueue:MassQueueUnits( event )
 	else
 		print("This building does not have the specified ability")
 	end
+	
 end
 
 
@@ -250,6 +284,7 @@ function SpawnUnit( unit, building, player )
 	local unitSpawned =	CreateUnitByName(unit, location, true, player, player, team)
 	unitSpawned:SetControllableByPlayer(playerID, true)
 	unitSpawned:SetOwner(player)
+	FindClearSpaceForUnit(unitSpawned, unitSpawned:GetAbsOrigin(), true)
 	unitSpawned.IsBuilding = false;
 	table.insert(player['units'], unitSpawned)
 	--Apply owned upgrades to new spawned units
@@ -262,10 +297,16 @@ function SpawnUnit( unit, building, player )
 		end
 	end
 	
-	
-	if building['RallyPoint'].rallySet == true then
-		building:MoveToRallyPoint(unitSpawned)
+	if FindUnitLabel(building, "CanRally") then
+		if building['RallyPoint'].rallySet == true then
+			building:MoveToRallyPoint(unitSpawned)
+		end
 	end
+	
+	if USE_POPULATION == true then
+		player:AddToPopulation( GameRules.UnitKV[unit]["PopCost"] )
+	end 
+	
 end
 
 

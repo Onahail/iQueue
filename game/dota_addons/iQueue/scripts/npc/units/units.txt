@@ -1,0 +1,127 @@
+"Soldier"
+{
+	// General
+	//----------------------------------------------------------------
+	"BaseClass"						"npc_dota_creature"
+	"Model"								"models/creeps/lane_creeps/creep_bad_melee/creep_bad_melee_mega.vmdl"
+	"ModelScale"					"1.0"
+	"Level"								"1"
+	"HealthBarOffset"			"140"
+	"HasInventory"				"0"
+	"ConsideredHero"			"1"
+
+	// iQueue Values
+	//----------------------------------------------------------------
+	"PopCost"							"5"
+	
+	// Abilities
+	//----------------------------------------------------------------
+	"AbilityLayout"				"4"
+	"Ability1"						""
+	//"Ability2"					""
+	//"Ability3"					""
+	//"Ability4"					""
+
+	// Armor
+	//----------------------------------------------------------------
+	"ArmorPhysical"				"5"
+	"MagicalResistance"			"0"
+	
+	// Attack
+	//----------------------------------------------------------------
+	"AttackCapabilities"		"DOTA_UNIT_CAP_MELEE_ATTACK"
+	"AttackDamageType"			"DAMAGE_TYPE_ArmorPhysical"
+	"AttackDamageMin"			"100"
+	"AttackDamageMax"			"200"
+	
+	// Bounty
+	//----------------------------------------------------------------
+	"BountyGoldMin"				"0.0"
+	"BountyGoldMax"				"0.0"
+	
+	// Bounds
+	//----------------------------------------------------------------
+	"BoundsHullName"			"DOTA_HULL_SIZE_REGULAR"
+	"RingRadius"					"100"
+	"CollisionSize"				"50"
+		
+	// Movement
+	//----------------------------------------------------------------
+	"MovementCapabilities"		"DOTA_UNIT_CAP_MOVE_FLY"
+	"MovementSpeed"				"350"
+	
+	// Status
+	//----------------------------------------------------------------
+	"StatusHealth"				"500"
+	"StatusHealthRegen"		"0"
+	"StatusMana"					"100"
+	"StatusManaRegen"			"0"
+	
+	// Vision
+	//----------------------------------------------------------------
+	"VisionDaytimeRange"		"900"
+	"VisionNighttimeRange"		"600"
+	
+}
+"harvester"
+{
+	// General
+	//----------------------------------------------------------------
+	"BaseClass"						"npc_dota_creature"
+	"Model"								"models/creeps/neutral_creeps/n_creep_ogre_med/n_creep_ogre_med.vmdl"
+	"ModelScale"					"0.5"
+	"Level"								"1"
+	"HealthBarOffset"			"140"
+	"HasInventory"				"0"
+	"ConsideredHero"			"1"
+	"UnitLabel"						"Harvester"
+	
+	// Abilities
+	//----------------------------------------------------------------
+	"AbilityLayout"				"4"
+	"Ability1"						""
+	//"Ability2"					""
+	//"Ability3"					""
+	//"Ability4"					""
+
+	// Armor
+	//----------------------------------------------------------------
+	"ArmorPhysical"				"5"
+	"MagicalResistance"			"0"
+	
+	// Attack
+	//----------------------------------------------------------------
+	"AttackCapabilities"		"DOTA_UNIT_CAP_MELEE_ATTACK"
+	"AttackDamageType"			"DAMAGE_TYPE_ArmorPhysical"
+	"AttackDamageMin"			"100"
+	"AttackDamageMax"			"200"
+	
+	// Bounty
+	//----------------------------------------------------------------
+	"BountyGoldMin"				"0.0"
+	"BountyGoldMax"				"0.0"
+	
+	// Bounds
+	//----------------------------------------------------------------
+	"BoundsHullName"			"DOTA_HULL_SIZE_REGULAR"
+	"RingRadius"					"100"
+	"CollisionSize"				"50"
+		
+	// Movement
+	//----------------------------------------------------------------
+	"MovementCapabilities"		"DOTA_UNIT_CAP_MOVE_GROUND"
+	"MovementSpeed"				"350"
+	
+	// Status
+	//----------------------------------------------------------------
+	"StatusHealth"				"500"
+	"StatusHealthRegen"		"0"
+	"StatusMana"					"100"
+	"StatusManaRegen"			"0"
+	
+	// Vision
+	//----------------------------------------------------------------
+	"VisionDaytimeRange"		"900"
+	"VisionNighttimeRange"		"600"
+	
+}

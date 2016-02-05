@@ -1,0 +1,54 @@
+.HarvestRoot
+{
+	vertical-align: bottom;
+	horizontal-align: middle;
+	margin-left: 400px;
+	margin-bottom: 180px;
+}
+
+#HarvestPanel
+{
+	width: 60px;
+	height: 60px;
+	border: 4px solid black;
+}
+
+
+#HarvestPanel:hover
+{
+	border: 4px solid #00E600;
+}
+
+
+#HarvestImage
+{
+	width: 100%;
+	height: 100%;
+}
+
+#DepositPanel
+{
+	width: 60px;
+	height: 60px;
+	border: 4px solid black;
+}
+
+
+#DepositPanel:hover
+{
+	border: 4px solid #00E600;
+}
+
+
+#DepositImage
+{
+	width: 100%;
+	height: 100%;
+}
+
+
+
+._hidden
+{
+	visibility: collapse;
+}

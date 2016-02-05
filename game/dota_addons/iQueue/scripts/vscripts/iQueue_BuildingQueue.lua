@@ -60,7 +60,18 @@ function BuildingQueue:InitializeBuildingEntity( building )
 			CustomGameEventManager:Send_ServerToPlayer( owner, "add_to_queue", { queueTime = queueTime, abilityName = abilityName, entindex = building:entindex() })
 			if building.state == "Not Building" then
 				--print ("Starting queue")
-				building:StartQueue(queueTime, queueType, abilityName)
+				if USE_POPULATION == true and queueType == 'Unit' then
+					--print("Player Population:", owner['population'].current)
+					--print("WhatToQueue:", building['Queue'][1].whatToQueue)
+					--print("PopCost for Unit:", GameRules.UnitKV[building['Queue'][1].whatToQueue]["PopCost"])
+					if owner['population'].current + GameRules.UnitKV[building['Queue'][1].whatToQueue]["PopCost"] > owner['population'].total then
+						print("Player has reached max capacity for population")
+					else
+						building:StartQueue(queueTime, queueType, abilityName)
+					end
+				else 
+					building:StartQueue(queueTime, queueType, abilityName)
+				end
 			end
 		else
 			print("MAX QUEUE LIMIT REACHED!")

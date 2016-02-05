@@ -46,8 +46,8 @@ function SetTimerState(timerState)
 
 (function()
 {
-	$.GetContextPanel().data().SetTimer = SetTimer;
-	$.GetContextPanel().data().SetTimerState = SetTimerState;
+	$.GetContextPanel().SetTimer = SetTimer;
+	$.GetContextPanel().SetTimerState = SetTimerState;
 	UpdateTimer();
 	
 })();

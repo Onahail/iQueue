@@ -23,22 +23,22 @@ function UpdateSlot()
 
 function Cancel()
 {
-		var queueParent = $.GetContextPanel().data().ParentPanel;
-		var slotNumber = $.GetContextPanel().data().SlotNumber;
+		var queueParent = $.GetContextPanel().ParentPanel;
+		var slotNumber = $.GetContextPanel().SlotNumber;
 		
 		//$.Msg("Slot number: ", slotNumber);
 		$.Schedule( 0.1, function(){
-			queueParent.data().CancelQueueInSlot( slotNumber );
+			queueParent.CancelQueueInSlot( slotNumber );
 		} );
 		
 }
 
 function ShowCancelImage()
 {
-	var queueParent = $.GetContextPanel().data().ParentPanel;
-	var slotNumber = $.GetContextPanel().data().SlotNumber;
+	var queueParent = $.GetContextPanel().ParentPanel;
+	var slotNumber = $.GetContextPanel().SlotNumber;
 	
-	if (queueParent.data().CheckQueue( slotNumber ))
+	if (queueParent.CheckQueue( slotNumber ))
 	{
 		$.GetContextPanel().SetHasClass( "show_cancel", true);
 	}
@@ -72,8 +72,8 @@ function SetQueueSlot( queueSlot )
 
 (function()
 {
-	$.GetContextPanel().data().SetQueueSlot = SetQueueSlot;
-	$.GetContextPanel().data().SetQueue = SetQueue;
+	$.GetContextPanel().SetQueueSlot = SetQueueSlot;
+	$.GetContextPanel().SetQueue = SetQueue;
 	
 	UpdateSlot();
 })();

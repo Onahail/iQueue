@@ -51,7 +51,7 @@ function DetermineSelection()
 			}
 			else
 			{
-				HideRallyPoint(index, playerID)
+				HideRallyPoint(index)
 			}
 		}
 	//}
@@ -189,12 +189,13 @@ function LeftClickRallyButton()
 	{
 		RallyTable[selectedEntities[i]].rallySet = false;
 		$.Msg(RallyTable[mainSelected].rallySet)
-		if (RallyTable[selectedEntities[i]].flag != undefined)
+		HideRallyPoint(selectedEntities[i])
+		/*if (RallyTable[selectedEntities[i]].flag != undefined)
 		{
 			Particles.DestroyParticleEffect(RallyTable[selectedEntities[i]].flag, true);
 			Particles.DestroyParticleEffect(RallyTable[selectedEntities[i]].line, true);
 			RallyTable[selectedEntities[i]].flag = undefined;
-		}
+		}*/
 		RallyTable[selectedEntities[i]].flag = Particles.CreateParticle("particles/iqueue_particles/rally_flag.vpcf", ParticleAttachment_t.PATTACH_CUSTOMORIGIN, playerID)
 		RallyTable[selectedEntities[i]].line = Particles.CreateParticle("particles/units/heroes/hero_wisp/wisp_tether.vpcf", ParticleAttachment_t.PATTACH_CUSTOMORIGIN, playerID);
 		Particles.SetParticleControl(RallyTable[selectedEntities[i]].line, 1, Entities.GetAbsOrigin(selectedEntities[i]))
@@ -211,7 +212,7 @@ function LeftClickRallyButton()
 function RightClickRallyButton()
 {
 	bRallyPointActive = true;
-	var contextMenu = $.CreatePanel( "DOTAContextMenuScript", $.GetContextPanel(), "" );
+	var contextMenu = $.CreatePanel( "ContextMenuScript", $.GetContextPanel(), "" );
 	contextMenu.AddClass( "ContextMenu_NoArrow" );
 	contextMenu.AddClass( "ContextMenu_NoBorder" );
 	contextMenu.GetContentsPanel().SetHasClass( "bRallyPointActive", bRallyPointActive );
@@ -224,7 +225,7 @@ function RightClickRallyButton()
 Particle control
 -------------------------------------------------------------------------------------------------------------------------
 */
-function ShowRallyPoint(index, playerID, entityTargetRally)
+function ShowRallyPoint(index, playerID)
 {
 	if (RallyTable[index].line != undefined)
 	{

@@ -7,16 +7,17 @@
 		<include src="file://{resources}/scripts/iqueue/iqueue_timer.js" />
 	</scripts>
 	<Panel class="QueuePanel">
+		<Image id="EmptyImage" src="file://{images}/custom_game/empty_slot.png" />
 		<Button id="QueueButton"
 			onactivate="Cancel()"
 			onmouseover="ShowCancelImage()"
 			onmouseout="HideCancelImage()">
-			<DOTAAbilityImage hittest="false" id="AbilityImage" />	
+			<DOTAAbilityImage hittest="false" id="AbilityImage" />
 			<Panel hittest="false" id="Cooldown">
 				<Panel hittest="false" id="CooldownOverlay" />
 				<Label hittest="false" id="CooldownTimer"	/>
 			</Panel>
-			<Panel id="CancelPanel">
+			<Panel id="CancelPanel" class="_hidden">
 				<Image id="CancelImage" src="file://{images}/custom_game/cancel_image.png" />
 			</Panel>
 		</Button>

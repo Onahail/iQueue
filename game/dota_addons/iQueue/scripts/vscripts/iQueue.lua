@@ -161,12 +161,26 @@ function iQueue:MassQueueUnits( event )
 	local queueTime = event.QueueTime
 	local queueType = event.QueueType
 	local whatToQueue = event.WhatToQueue
+	local owner = building:GetOwner()
 	
 	if building:FindAbilityByName(event.AbilityName) ~= nil then
-		if #building['Queue'] + 1 < MAX_BUILDING_QUEUE then
-			building['RUSlot'][#building['Queue']+1] = true;
+	
+		if USE_POPULATION == true then
+			if owner['population'].current + GameRules.UnitKV[whatToQueue]["PopCost"] <= owner['population'].total then
+				if #building['Queue'] + 1 < MAX_BUILDING_QUEUE then
+					building['RUSlot'][#building['Queue']+1] = true;
+				end
+				building:AddToQueue( event.AbilityName, queueTime, queueType, whatToQueue )
+			else
+				print("MAX POPULATION REACHED")
+			end
+		else
+			if #building['Queue'] + 1 < MAX_BUILDING_QUEUE then
+				building['RUSlot'][#building['Queue']+1] = true;
+			end
+			building:AddToQueue( event.AbilityName, queueTime, queueType, whatToQueue )
 		end
-		building:AddToQueue( event.AbilityName, queueTime, queueType, whatToQueue )
+		 
 	else
 		print("This building does not have the specified ability")
 	end
@@ -204,6 +218,9 @@ function iQueue:RemoveFromQueue( event )
 	--print("RUSlot ", #building['Queue'], "is", building['RUSlot'][#building['Queue']])
 	local x = table.remove(building['Queue'], queuePosition)
 	if queuePosition == 1 then
+		if USE_POPULATION == true then
+			player:RemoveFromPopulation( GameRules.UnitKV[x.whatToQueue]["PopCost"] )
+		end
 		building:DestroyQueueTimer()
 	end
 end
@@ -303,10 +320,6 @@ function SpawnUnit( unit, building, player )
 		end
 	end
 	
-	if USE_POPULATION == true then
-		player:AddToPopulation( GameRules.UnitKV[unit]["PopCost"] )
-	end 
-	
 end
 
 
@@ -345,9 +358,9 @@ function ShowHideOrRemoveAbility( player, abilityName, upgradeName)
 	
 	for _,building in pairs(player['structures']) do
 		if player['QueueTrack'][abilityName].inQueue == true then
-			building:HideAbility(abilityName)
+			building:AbilityHide(abilityName)
 		elseif player['QueueTrack'][abilityName].inQueue == false then
-			building:ShowAbility(abilityName)
+			building:AbilityShow(abilityName)
 		else
 			print("Something went wrong in ShowHideOrRemoveAbility")
 		end
@@ -357,7 +370,7 @@ function ShowHideOrRemoveAbility( player, abilityName, upgradeName)
 		if player['upgrades'][upgradeName].rank == maxRank then
 			print(abilityName, "is now max rank. Removing from all buildings")
 			for _,building in pairs(player['structures']) do
-				building:RemoveAbility(abilityName)
+				building:AbilityRemove(abilityName)
 			end
 		end
 	end

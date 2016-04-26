@@ -35,7 +35,8 @@ function Population:InitializePopulationForPlayer( player )
 	end
 	
 	function player:RemoveFromPopulation( amount )
-
+		player['population'].current = player['population'].current - amount
+		print("Player Current Population:", player['population'].current, "/", player['population'].total)
 	end
 	
 end

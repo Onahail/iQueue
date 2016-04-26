@@ -6,11 +6,12 @@
 		<include src="file://{resources}/scripts/iqueue/iqueue_panels.js" /> 
 	</scripts>
 	<Panel class="QueuePanel">
+		<Image id="EmptyImage" src="file://{images}/custom_game/empty_slot.png" />
 		<Button id="QueueButton"
 			onactivate="Cancel()"
 			onmouseover="ShowCancelImage()"
 			onmouseout="HideCancelImage()">
-			<DOTAAbilityImage hittest="false" id="AbilityImage" />	
+			<DOTAAbilityImage hittest="false" id="AbilityImage"/>
 			<Panel id="CancelPanel" class="_hidden">
 				<Image id="CancelImage" src="file://{images}/custom_game/cancel_image.png" />
 			</Panel>

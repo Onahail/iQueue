@@ -13,7 +13,7 @@ function InitializeRallyTable( event )
 	$.Schedule( 0.1, function(){	
 		if (FindUnitLabel(index, "CanRally"))
 		{
-			$.Msg("Initialziing flag table for index:", index)	
+			//$.Msg("Initialziing flag table for index:", index)	
 			RallyTable[index] = [];
 			RallyTable[index].rallySet = false;
 			RallyTable.RallyButtonPressed = false;
@@ -242,7 +242,7 @@ function ShowRallyPoint(index, playerID)
 	{
 		if (RallyTable[index].rallyOnEntity == false)
 		{
-			$.Msg("Recreating flag for index: ", index);
+			//$.Msg("Recreating flag for index: ", index);
 			RallyTable[index].flag = Particles.CreateParticle("particles/iqueue_particles/rally_flag.vpcf", ParticleAttachment_t.PATTACH_CUSTOMORIGIN, playerID);
 			Particles.SetParticleControl(RallyTable[index].flag, 0, RallyTable[index].flagLocation);
 			

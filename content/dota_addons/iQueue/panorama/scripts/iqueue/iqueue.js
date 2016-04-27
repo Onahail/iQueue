@@ -77,7 +77,7 @@ function MassQueue( event ){
 	
 	for (i = 0; i < selectedEntities.length; i++)
 	{
-		$.Msg("Telling server to mass queue")
+		//$.Msg("Telling server to mass queue")
 		GameEvents.SendCustomGameEventToServer( "mass_queue_units", { entIndex : selectedEntities[i],
 																															 AbilityName : event.AbilityName,
 																															 WhatToQueue : event.WhatToQueue, 

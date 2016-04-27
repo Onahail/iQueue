@@ -40,3 +40,26 @@ function Population:InitializePopulationForPlayer( player )
 	end
 	
 end
+
+function Population:QueuePopulationCheck( player, building )
+		
+	if player['population'].current + GameRules.UnitKV[building['Queue'][1].whatToQueue]["PopCost"] <= player['population'].total then
+		return true
+	else
+		return false
+	end
+
+end
+
+function Population:TemporaryProductionHalt( player, building )
+		
+		building:SetThink(function() 
+			if player['population'].current + GameRules.UnitKV[building['Queue'][1].whatToQueue]["PopCost"] > player['population'].total then
+				return BUILDING_THINK
+			end
+			building:StartQueue()
+			CustomGameEventManager:Send_ServerToPlayer( owner, "update_timer", { entindex = building:entindex() })
+			return nil
+		end, "QueueHaltPopulationCheck")
+	end
+end

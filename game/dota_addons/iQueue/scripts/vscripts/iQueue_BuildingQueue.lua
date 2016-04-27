@@ -67,7 +67,7 @@ function BuildingQueue:InitializeBuildingEntity( building )
 	end
 	
 	function building:StartQueue()
-	
+		
 		local queueTime = building['Queue'][1].queueTime
 		local queueType = building['Queue'][1].queueType
 		local whatToQueue = building['Queue'][1].whatToQueue
@@ -75,73 +75,70 @@ function BuildingQueue:InitializeBuildingEntity( building )
 	
 		local currentGameTime = GameRules:GetGameTime();
 		local endTime = queueTime + currentGameTime
-		print(queueType, whatToQueue, "has started, it will be finished in ", queueTime, " seconds.")
+		--print(queueType, whatToQueue, "has started, it will be finished in ", queueTime, " seconds.")
 		building.state = "Building"
+		building.queueCancelled = false
 		CustomGameEventManager:Send_ServerToPlayer( owner, "show_timer", { queueTime = queueTime, currentGameTime = currentGameTime, index = building:entindex() })
 		
 		if (USE_POPULATION == true and queueType == "Unit") then
 			owner:AddToPopulation( GameRules.UnitKV[whatToQueue]["PopCost"] )
 		end 
-	
-	
+		
+		print("Starting queue")
 		building:SetThink(function()
+			
+			print("Thinking")
 			local timeRemaining = endTime - GameRules:GetGameTime()
-			if building:IsAlive() then
-				if timeRemaining > 0 and building.queueCancelled == false and IsValidEntity(building) then
-					return BUILDING_THINK
-				elseif building.queueCancelled == false then
-					if queueType == "Unit" then
-						SpawnUnit(whatToQueue, building, owner )
-					elseif queueType == "Research" then
-						UnlockResearch()
-					elseif queueType =="Upgrade" then
-						local upgradeName = whatToQueue
-						UpdatePlayerUpgrades( owner, whatToQueue, abilityName )
-					else	
-						print("QueueType not specified... Breaking")
-						return;
-					end
-					local x = table.remove(building['Queue'], 1)
-					CustomGameEventManager:Send_ServerToPlayer( owner, "remove_from_queue", { entindex = building:entindex() })
-					if #building['Queue'] > 0 then
-						if (USE_POPULATION == true and queueType == "Unit") then
-							if owner['population'].current + GameRules.UnitKV[whatToQueue]["PopCost"] <= owner['population'].total then
-								building:StartQueue()
-								return BUILDING_THINK
-							else
-								return BUILDING_THINK
-							end
-						else
-							building:StartQueue()
-							return BUILDING_THINK
-						end
-					else
-						building.state = "Not Building"
-						return nil
-					end
-				else
-					building.queueCancelled = false
-					if #building['Queue'] > 0 then
-						return BUILDING_THINK
-					else
-						return nil
-					end
-				end	
+			
+			if IsValidEntity(building) and building:IsAlive() then
+				if building.queueCancelled == true or building.queue.state == "Not Building" 
+					print("Queue cancelled")
+					return nil
+				end
+				
+				if timeRemaining > 0 then return BUILDING_THINK end
+
+				print("Production complete")
+
+				if queueType == "Unit" then
+					SpawnUnit(whatToQueue, building, owner )
+				elseif queueType == "Research" then
+					UnlockResearch()
+				elseif queueType =="Upgrade" then
+					local upgradeName = whatToQueue
+					UpdatePlayerUpgrades( owner, whatToQueue, abilityName )
+				else	
+					print("QueueType not specified... Breaking")
+					return nil
+				end
+				
+				local x = table.remove(building['Queue'], 1)
+				CustomGameEventManager:Send_ServerToPlayer( owner, "remove_from_queue", { entindex = building:entindex() })
+				
+				building:ProcessQueue()
+				return BUILDING_THINK
 			else
-			 return nil
+				return nil
 			end
-		end)
+		end, "BuildingQueueTimer")
 	end
 	
-	function building:DestroyQueueTimer()
-		building.queueCancelled = true
+	function building:ProcessQueue()
+		print("Entering process queue")
 		if #building['Queue'] > 0 then
-				building:StartQueue( building['Queue'][1].queueTime, building['Queue'][1].queueType )
-				CustomGameEventManager:Send_ServerToPlayer( owner, "update_timer", { entindex = building:entindex() })
+			if USE_POPULATION == true then
+				if not Population:QueuePopulationCheck( owner, building ) then
+					Population:TemporaryProductionHalt( owner, building )
+					return nil
+				end
+			end
+			building:StartQueue() 
+			CustomGameEventManager:Send_ServerToPlayer( owner, "update_timer", { entindex = building:entindex() })
+			--print("Continuing queue")
 		else
+			--print("Queue complete")
 			building.state = "Not Building"
 			CustomGameEventManager:Send_ServerToPlayer( owner, "change_timer_state", { entindex = building:entindex() })
-			return;
 		end
 	end
 	
@@ -166,5 +163,5 @@ function BuildingQueue:InitializeBuildingEntity( building )
 			building:RemoveAbilityFromBuilding(abilityName)
 		end
 	end
-
+	
 end

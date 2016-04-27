@@ -2,7 +2,7 @@
 
 MAX_POPULATION = 100
 BASE_POPULATION = 0
-USE_POPULATION = true
+USE_POPULATION = false
 
 
 
@@ -45,9 +45,11 @@ function CreateBuilding( event )
 			BuildingQueue:InitializeBuildingEntity( building )
 		end
 		
-		if FindUnitLabel(building, "PopSource") then
-			--print(GameRules.UnitKV[building:GetUnitName()]["PopValue"])
-			player:IncreasePopulation( GameRules.UnitKV[building:GetUnitName()]["PopValue"] )
+		if USE_POPULATION == true then
+			if FindUnitLabel(building, "PopSource") then
+				--print(GameRules.UnitKV[building:GetUnitName()]["PopValue"])
+				player:IncreasePopulation( GameRules.UnitKV[building:GetUnitName()]["PopValue"] )
+			end
 		end
 
 
@@ -80,7 +82,7 @@ function iQueue:Init()
 	CustomGameEventManager:RegisterListener( "mass_queue_units", Dynamic_Wrap(iQueue, "MassQueueUnits"))
 	CustomGameEventManager:RegisterListener( "queue_research_or_upgrade", Dynamic_Wrap(iQueue, "QueueResearchOrUpgrade"))
 	CustomGameEventManager:RegisterListener( "remove_from_queue", Dynamic_Wrap(iQueue, "RemoveFromQueue"))
-	CustomGameEventManager:RegisterListener( "destroy_queue_timer", Dynamic_Wrap(iQueue, "DestroyQueueTimer"))
+	--CustomGameEventManager:RegisterListener( "destroy_queue_timer", Dynamic_Wrap(iQueue, "DestroyQueueTimer"))
 	CustomGameEventManager:RegisterListener( "player_set_rally_point_ground", Dynamic_Wrap(RallyPoints, "PlayerSetRallyPointGround"))
 	CustomGameEventManager:RegisterListener( "player_set_rally_point_entity", Dynamic_Wrap(RallyPoints, "PlayerSetRallyPointEntity"))
 	CustomGameEventManager:RegisterListener( "player_removed_rally_point", Dynamic_Wrap(RallyPoints, "PlayerRemovedRallyPoint")) 
@@ -155,7 +157,7 @@ end
 
 
 function iQueue:MassQueueUnits( event )
-	print("Executing order")
+	--print("Executing order")
 	--print("abilityName is: ", event.AbilityName)
 	local building = EntIndexToHScript(event.entIndex)
 	local queueTime = event.QueueTime
@@ -215,13 +217,12 @@ function iQueue:RemoveFromQueue( event )
 		ShowHideOrRemoveAbility( player, abilityName, building['Queue'][queuePosition].whatToQueue )
 	end
 	building['RUSlot'][#building['Queue']] = false;
-	--print("RUSlot ", #building['Queue'], "is", building['RUSlot'][#building['Queue']])
+	
+	
 	local x = table.remove(building['Queue'], queuePosition)
 	if queuePosition == 1 then
-		if USE_POPULATION == true then
-			player:RemoveFromPopulation( GameRules.UnitKV[x.whatToQueue]["PopCost"] )
-		end
-		building:DestroyQueueTimer()
+		building.queueCancelled = true
+		building:ProcessQueue()
 	end
 end
 

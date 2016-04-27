@@ -48,7 +48,7 @@ function CreateBuilding( event )
 		if USE_POPULATION == true then
 			if FindUnitLabel(building, "PopSource") then
 				--print(GameRules.UnitKV[building:GetUnitName()]["PopValue"])
-				player:IncreasePopulation( GameRules.UnitKV[building:GetUnitName()]["PopValue"] )
+				player:IncreaseTotalPopulation( GameRules.UnitKV[building:GetUnitName()]["PopValue"] )
 			end
 		end
 
@@ -160,29 +160,13 @@ function iQueue:MassQueueUnits( event )
 	--print("Executing order")
 	--print("abilityName is: ", event.AbilityName)
 	local building = EntIndexToHScript(event.entIndex)
-	local queueTime = event.QueueTime
-	local queueType = event.QueueType
-	local whatToQueue = event.WhatToQueue
 	local owner = building:GetOwner()
 	
 	if building:FindAbilityByName(event.AbilityName) ~= nil then
-	
 		if USE_POPULATION == true then
-			if owner['population'].current + GameRules.UnitKV[whatToQueue]["PopCost"] <= owner['population'].total then
-				if #building['Queue'] + 1 < MAX_BUILDING_QUEUE then
-					building['RUSlot'][#building['Queue']+1] = true;
-				end
-				building:AddToQueue( event.AbilityName, queueTime, queueType, whatToQueue )
-			else
-				print("MAX POPULATION REACHED")
-			end
-		else
-			if #building['Queue'] + 1 < MAX_BUILDING_QUEUE then
-				building['RUSlot'][#building['Queue']+1] = true;
-			end
-			building:AddToQueue( event.AbilityName, queueTime, queueType, whatToQueue )
+			if not Population:QueuePopulationCheck( owner, building ) then return end
 		end
-		 
+		building:AddToQueue( event.AbilityName, event.QueueTime, event.QueueType, event.WhatToQueue )
 	else
 		print("This building does not have the specified ability")
 	end
@@ -212,12 +196,13 @@ function iQueue:RemoveFromQueue( event )
 	local player = building:GetOwner()
 	local queuePosition = event.slotNumber
 	local abilityName = building['Queue'][queuePosition].abilityName
+	local whatToQueue = building['Queue'][queuePosition].whatToQueue
 	if building['Queue'][queuePosition].queueType == ("Upgrade" or "Research") then
 		player['QueueTrack'][abilityName].inQueue = false;
-		ShowHideOrRemoveAbility( player, abilityName, building['Queue'][queuePosition].whatToQueue )
+		ShowHideOrRemoveAbility( player, abilityName, whatToQueue )
 	end
-	building['RUSlot'][#building['Queue']] = false;
 	local x = table.remove(building['Queue'], queuePosition)
+	building['RUSlot'][#building['Queue']] = false;
 	if queuePosition == 1 then
 		building.queueCancelled = true
 		if building.queueHalted == false then
@@ -333,13 +318,13 @@ end
 
 function FindFreeSlot(mainSelectedBuilding, selectedEntities, abilityName)
 	local mainEntity = mainSelectedBuilding:GetEntityIndex()
-		for slotNumber=1,6 do
+		for slotNumber=0,5 do
 			if mainSelectedBuilding['RUSlot'][slotNumber] == false then
 				mainSelectedBuilding['RUSlot'][slotNumber] = true
 				return mainSelectedBuilding
 			end
 			for indexAsString, selectedEntity in pairs(selectedEntities) do 
-				if selectedEntity ~= mainEntity or slotNumber ~= 1 then 
+				if selectedEntity ~= mainEntity or slotNumber ~= 0 then 
 					local building = EntIndexToHScript(selectedEntity)
 					if building:FindAbilityByName(abilityName) ~= nil then
 						if building['RUSlot'][slotNumber] == false then

@@ -160,7 +160,7 @@ function BuildingQueue:InitializeBuildingEntity( building )
 		local ability = building:FindAbilityByName(abilityName)
 		if ability ~= nil then
 			ability:SetHidden(true)
-			building:RemoveAbilityFromBuilding(abilityName)
+			building:RemoveAbility(abilityName)
 		end
 	end
 	

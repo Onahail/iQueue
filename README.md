@@ -12,7 +12,6 @@
 - Implement second queue style for units
 - Rally point interaction with trees
 - Rally point interaction with other units
-- Implement population
 - Implement resource control
 - Implement harvesting system
 

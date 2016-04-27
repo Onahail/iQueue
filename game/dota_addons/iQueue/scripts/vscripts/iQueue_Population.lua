@@ -6,25 +6,35 @@ end
 function Population:InitializePopulationForPlayer( player )
 
 	player['population'] = player['population'] or {}
-	player['population'].total = BASE_POPULATION
-	player['population'].current = 0
+	player['population'].totalUsable = BASE_POPULATION
+	player['population'].currentValue = 0
+	player['population'].actualTotal = player['population'].totalUsable -- Used for tracking population values past MAX_POPULATION in order to keep track of loss of population sources valuing past MAX_POPULATION
 	
-	function player:IncreasePopulation( amount )
 	
-		if player['population'].total < MAX_POPULATION then
-			player['population'].total = player['population'].total + amount
-			print("Player Available Population:", player['population'].total)
-		else
-			print("PLAYER AT MAXIMUM POPULATION")
+	
+	function Player:IncreaseTotalPopulation( amount )
+		
+		if player['population'].totalUsable + amount <= MAX_POPULATION then
+			player['population'].totalUsable = player['population'].totalUsable + amount
+			player['population'].actualTotal = player['population'].totalUsable
+	 else
+			player['population'].actualTotal = player['population'].actualTotal + amount
+			player['population'].totalUsable = MAX_POPULATION
+			--print("PLAYER AT MAXIMUM ALLOWABLE POPULATION")
 		end
-	
-	
+
+	end
+
+	function Player:DecreaseTotalPopulation( amount )
+		
+		if player['population'].actualTotal - amount <= MAX_POPULATION then
+			player['population'].totalUsable = player['population'].actualTotal - amount
+			player['population'].actualTotal = player['population'].totalUsable
+			return
+		end
+		player['population'].actualTotal = player['population'].actualTotal - amount
 	end
 	
-	function player:DecreasePopulation( amount )
-	
-	
-	end
 	
 	function player:AddToPopulation( amount )
 	
@@ -47,7 +57,7 @@ function Population:QueuePopulationCheck( player, building )
 		return true
 	end
 	
-	if player['population'].current + GameRules.UnitKV[building['Queue'][1].whatToQueue]["PopCost"] <= player['population'].total then
+	if player['population'].current + GameRules.UnitKV[building['Queue'][1].whatToQueue]["PopCost"] <= player['population'].totalUsable then
 		return true
 	else
 		return false
@@ -68,7 +78,7 @@ function Population:TemporaryProductionHalt( player, building )
 			return nil 
 		end
 		
-		if player['population'].current + GameRules.UnitKV[building['Queue'][1].whatToQueue]["PopCost"] > player['population'].total then
+		if player['population'].current + GameRules.UnitKV[building['Queue'][1].whatToQueue]["PopCost"] > player['population'].totalUsable then
 			return BUILDING_THINK
 		end
 		building:ProcessQueue()

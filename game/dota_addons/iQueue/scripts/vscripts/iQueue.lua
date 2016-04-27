@@ -1,7 +1,7 @@
 -- Settings
 
 MAX_POPULATION = 100
-BASE_POPULATION = 0
+BASE_POPULATION = 5
 USE_POPULATION = true
 
 
@@ -65,6 +65,11 @@ end
 function iQueue:Init()
 
 	print("Initiating iQueue")
+	
+	--Modular game listeners
+	if USE_POPULATION == true then
+		ListenToGameEvent('entity_killed', Dynamic_Wrap(Population, 'EntityKilled'), self)
+	end
 	
 	GameRules:SetSameHeroSelectionEnabled( true )
 
@@ -136,6 +141,7 @@ function iQueue:EntityKilled( keys )
 	else
 		player['units'][killedUnit] = nil
 	end
+	
 	-- Uncomment this block of code is you need any of these values
 	--[[ 
 	-- The Killing entity
@@ -163,9 +169,9 @@ function iQueue:MassQueueUnits( event )
 	local owner = building:GetOwner()
 	
 	if building:FindAbilityByName(event.AbilityName) ~= nil then
-		if USE_POPULATION == true then
-			if not Population:QueuePopulationCheck( owner, building ) then return end
-		end
+		if USE_POPULATION == true and event.QueueType == 'Unit' then 
+			if not building:QueuePopulationCheck( event.WhatToQueue ) then return end
+		end	
 		building:AddToQueue( event.AbilityName, event.QueueTime, event.QueueType, event.WhatToQueue )
 	else
 		print("This building does not have the specified ability")

@@ -1,0 +1,16 @@
+<root>
+	<styles>
+    <include src="file://{resources}/styles/custom_game/population_overlay.css" />
+	</styles>
+	<scripts>
+		<include src="file://{resources}/scripts/iqueue/population.js" /> 
+	</scripts>
+	<Panel class="PopulationRoot" hittest="true">
+		<Panel id="PopulationPanel">
+			<Label hittest="false" id="PopulationText" />
+		</Panel>
+		<Panel id="ChickenLeg">
+			<Image id="ChickenLegImage" src="file://{images}/custom_game/population_image.png" />
+		</Panel>
+	</Panel>
+</root>

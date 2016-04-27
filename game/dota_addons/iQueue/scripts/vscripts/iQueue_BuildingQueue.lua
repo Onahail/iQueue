@@ -16,7 +16,10 @@ function BuildingQueue:InitializeBuildingEntity( building )
 	if FindUnitLabel(building, "CanRally") then
 		RallyPoints:AttachRallyPointControl( building )
 	end
-		
+	
+	if USE_POPULATION == true then 
+		Population:InitializePopulationForBuilding( building )
+	end
 	
 	building.queueCancelled = false
 	building.IsBuilding = true;
@@ -53,8 +56,7 @@ function BuildingQueue:InitializeBuildingEntity( building )
 			building['RUSlot'][#building['Queue']] = true;
 			table.insert(building['Queue'], queueTable)
 			if queueType == ("Upgrade" or "Research") then
-				--owner['QueueTrack'][abilityName] = abilityName;
-				owner['QueueTrack'].abilityName = {};
+				owner['QueueTrack'][abilityName] = {};
 				owner['QueueTrack'][abilityName].inQueue = true;
 				ShowHideOrRemoveAbility(owner, abilityName, building['Queue'][1].whatToQueue)
 			end
@@ -83,7 +85,7 @@ function BuildingQueue:InitializeBuildingEntity( building )
 		CustomGameEventManager:Send_ServerToPlayer( owner, "show_timer", { queueTime = queueTime, currentGameTime = currentGameTime, index = building:entindex() })
 		
 		if (USE_POPULATION == true and queueType == "Unit") then
-			owner:AddToPopulation( GameRules.UnitKV[whatToQueue]["PopCost"] )
+			owner:AddToPopulation( GetPopulationCost(whatToQueue) )
 		end 
 		
 		print("Starting queue")
@@ -125,11 +127,11 @@ function BuildingQueue:InitializeBuildingEntity( building )
 	end
 	
 	function building:ProcessQueue()
-		print("Entering process queue")
+		--print("Entering process queue")
 		if #building['Queue'] > 0 then
 			if USE_POPULATION == true then
-				if not Population:QueuePopulationCheck( owner, building ) then
-					Population:TemporaryProductionHalt( owner, building )
+				if not building:QueuePopulationCheck( building['Queue'][1].whatToQueue ) then
+					building:TemporaryProductionHalt()
 					return
 				end
 			end

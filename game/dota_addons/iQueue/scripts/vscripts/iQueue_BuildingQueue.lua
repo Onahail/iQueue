@@ -29,12 +29,12 @@ function BuildingQueue:InitializeBuildingEntity( building )
 	
 	-- Queue slot flags for Research and Upgrade
 	-- These flags will handle queue behavior for Researchs and Upgrades
+	building['RUSlot'][0] = false;
 	building['RUSlot'][1] = false;
 	building['RUSlot'][2] = false;
 	building['RUSlot'][3] = false;
 	building['RUSlot'][4] = false;
 	building['RUSlot'][5] = false;
-	building['RUSlot'][6] = false;
 	
 	for buildingAbilities,_ in pairs(owner['QueueTrack']) do
 		local buildingAbility = building:FindAbilityByName(buildingAbilities)
@@ -50,10 +50,11 @@ function BuildingQueue:InitializeBuildingEntity( building )
 		local queueTable = {whatToQueue = whatToQueue, queueTime = queueTime, abilityName = abilityName, queueType = queueType}
 
 		if #building['Queue'] < MAX_BUILDING_QUEUE then
+			building['RUSlot'][#building['Queue']] = true;
 			table.insert(building['Queue'], queueTable)
 			if queueType == ("Upgrade" or "Research") then
-				owner['QueueTrack'][abilityName] = abilityName;
-				owner['QueueTrack'][abilityName] = {};
+				--owner['QueueTrack'][abilityName] = abilityName;
+				owner['QueueTrack'].abilityName = {};
 				owner['QueueTrack'][abilityName].inQueue = true;
 				ShowHideOrRemoveAbility(owner, abilityName, building['Queue'][1].whatToQueue)
 			end

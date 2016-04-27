@@ -25,6 +25,7 @@ function Population:InitializePopulationForPlayer( player )
 	end, 0.1)
 	
 	function player:IncreaseTotalPopulation( amount )
+		if amount == nil then amount = 0 end
 		
 		if player['population'].totalUsable + amount <= MAX_POPULATION then
 			player['population'].totalUsable = player['population'].totalUsable + amount
@@ -39,6 +40,7 @@ function Population:InitializePopulationForPlayer( player )
 	end
 
 	function player:DecreaseTotalPopulation( amount )
+		if amount == nil then amount = 0 end
 		
 		if player['population'].actualTotal - amount <= MAX_POPULATION then
 			player['population'].totalUsable = player['population'].actualTotal - amount
@@ -52,12 +54,14 @@ function Population:InitializePopulationForPlayer( player )
 	
 	
 	function player:AddToPopulation( amount )
+		if amount == nil then amount = 0 end
 		player['population'].current = player['population'].current + amount
 		print("Player Current Population:", player['population'].current, "/", player['population'].totalUsable)
 		CustomGameEventManager:Send_ServerToPlayer( player, "update_population_values", {currentPopulation = player['population'].current, totalPopulation = player['population'].totalUsable} )
 	end
 	
 	function player:RemoveFromPopulation( amount )
+		if amount == nil then amount = 0 end
 		player['population'].current = player['population'].current - amount
 		print("Player Current Population:", player['population'].current, "/", player['population'].totalUsable)
 		CustomGameEventManager:Send_ServerToPlayer( player, "update_population_values", {currentPopulation = player['population'].current, totalPopulation = player['population'].totalUsable} )
@@ -71,6 +75,8 @@ function Population:InitializePopulationForBuilding( building )
 	local player = building:GetOwner()
 		
 	function building:QueuePopulationCheck( unitName )
+		if GetPopulationCost( unitName ) == nil then return true end
+		
 		if player['population'].current + GetPopulationCost( unitName ) <= player['population'].totalUsable then
 			return true
 		else

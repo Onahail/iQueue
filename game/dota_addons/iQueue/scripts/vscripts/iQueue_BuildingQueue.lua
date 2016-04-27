@@ -83,10 +83,10 @@ function BuildingQueue:InitializeBuildingEntity( building )
 		building.queueHalted = false
 		building.queueCancelled = false
 		CustomGameEventManager:Send_ServerToPlayer( owner, "show_timer", { queueTime = queueTime, currentGameTime = currentGameTime, index = building:entindex() })
-		
+
 		if (USE_POPULATION == true and queueType == "Unit") then
 			owner:AddToPopulation( GetPopulationCost(whatToQueue) )
-		end 
+		end
 		
 		print("Starting queue")
 		building:SetThink(function()

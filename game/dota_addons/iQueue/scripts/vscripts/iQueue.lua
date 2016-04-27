@@ -393,4 +393,3 @@ function table_invert(t)
   for k, v in pairs(t) do u[v] = k end
   return u
 end
-

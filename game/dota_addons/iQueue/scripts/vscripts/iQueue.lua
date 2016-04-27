@@ -2,7 +2,7 @@
 
 MAX_POPULATION = 100
 BASE_POPULATION = 0
-USE_POPULATION = false
+USE_POPULATION = true
 
 
 
@@ -217,13 +217,17 @@ function iQueue:RemoveFromQueue( event )
 		ShowHideOrRemoveAbility( player, abilityName, building['Queue'][queuePosition].whatToQueue )
 	end
 	building['RUSlot'][#building['Queue']] = false;
-	
-	
 	local x = table.remove(building['Queue'], queuePosition)
 	if queuePosition == 1 then
 		building.queueCancelled = true
-		building:ProcessQueue()
+		if building.queueHalted == false then
+			if x.queueType == "Unit" then
+				player:RemoveFromPopulation( GameRules.UnitKV[x.whatToQueue]["PopCost"] )
+			end
+			building:ProcessQueue()
+		end
 	end
+
 end
 
 

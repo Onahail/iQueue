@@ -42,7 +42,11 @@ function Population:InitializePopulationForPlayer( player )
 end
 
 function Population:QueuePopulationCheck( player, building )
-		
+	
+	if building['Queue'][1].queueType ~= "Unit" then
+		return true
+	end
+	
 	if player['population'].current + GameRules.UnitKV[building['Queue'][1].whatToQueue]["PopCost"] <= player['population'].total then
 		return true
 	else
@@ -52,14 +56,23 @@ function Population:QueuePopulationCheck( player, building )
 end
 
 function Population:TemporaryProductionHalt( player, building )
+
+	--print("Not enough population for:", building['Queue'][1].whatToQueue, ". Halting queue!")
+	
+	building.queueHalted = true
+	
+	building:SetThink(function() 
 		
-		building:SetThink(function() 
-			if player['population'].current + GameRules.UnitKV[building['Queue'][1].whatToQueue]["PopCost"] > player['population'].total then
-				return BUILDING_THINK
-			end
-			building:StartQueue()
-			CustomGameEventManager:Send_ServerToPlayer( owner, "update_timer", { entindex = building:entindex() })
-			return nil
-		end, "QueueHaltPopulationCheck")
-	end
+		if #building['Queue'] == 0 then
+			building:ProcessQueue()
+			return nil 
+		end
+		
+		if player['population'].current + GameRules.UnitKV[building['Queue'][1].whatToQueue]["PopCost"] > player['population'].total then
+			return BUILDING_THINK
+		end
+		building:ProcessQueue()
+		CustomGameEventManager:Send_ServerToPlayer( owner, "update_timer", { entindex = building:entindex() })
+		return nil
+	end, "QueueHaltPopulationCheck")
 end

@@ -77,6 +77,7 @@ function BuildingQueue:InitializeBuildingEntity( building )
 		local endTime = queueTime + currentGameTime
 		--print(queueType, whatToQueue, "has started, it will be finished in ", queueTime, " seconds.")
 		building.state = "Building"
+		building.queueHalted = false
 		building.queueCancelled = false
 		CustomGameEventManager:Send_ServerToPlayer( owner, "show_timer", { queueTime = queueTime, currentGameTime = currentGameTime, index = building:entindex() })
 		
@@ -87,12 +88,11 @@ function BuildingQueue:InitializeBuildingEntity( building )
 		print("Starting queue")
 		building:SetThink(function()
 			
-			print("Thinking")
+			--print("Thinking")
 			local timeRemaining = endTime - GameRules:GetGameTime()
 			
 			if IsValidEntity(building) and building:IsAlive() then
-				if building.queueCancelled == true or building.queue.state == "Not Building" 
-					print("Queue cancelled")
+				if building.queueCancelled == true or building.state == "Not Building" or building.queueHalted == true then
 					return nil
 				end
 				
@@ -129,7 +129,7 @@ function BuildingQueue:InitializeBuildingEntity( building )
 			if USE_POPULATION == true then
 				if not Population:QueuePopulationCheck( owner, building ) then
 					Population:TemporaryProductionHalt( owner, building )
-					return nil
+					return
 				end
 			end
 			building:StartQueue() 

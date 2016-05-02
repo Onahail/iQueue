@@ -3,15 +3,6 @@ if Population == nil then
 	_G.Population = class({})
 end
 
- function Activate ()
-   GameRules:GetGameModeEntity():SetThink(PrintHello)
- end
-
- function ForcePopulationOverlayUpdateOnSpawn( player )
-   
-   return nil
- end
-
 function Population:InitializePopulationForPlayer( player )
 
 	print("Initialing population")
